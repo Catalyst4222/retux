@@ -1,22 +1,15 @@
 from datetime import datetime
 from attrs import define, field
 
-from ...client.mixins import Serializable
 from ...client.resources.abc import Snowflake
 from ...client.resources.guild import Member
 from ...utils.converters import optional_c
 
 
-@define()
-class TypingStart(Serializable):
+@define(kw_only=True)
+class TypingStart:
     """
-    Represents a `TYPING_START` event from Discord.
-
-    ---
-
-    Sent when a user starts typing in a channel.
-
-    ---
+    Represents a `TYPING_START` Gateway event from Discord.
 
     Attributes
     ----------
