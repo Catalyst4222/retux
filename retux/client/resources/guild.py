@@ -4,7 +4,7 @@ from typing import Any
 from enum import IntEnum
 from attrs import define, field
 
-from ..mixins import Serializable
+from ..mixins import Serializable, Controllable
 
 from .user import User, UserFlags, UserPremiumType
 from .emoji import Emoji
@@ -13,7 +13,6 @@ from .role import Role
 
 from .abc import Object, Partial, Snowflake
 
-from ..mixins import Serializable
 from ...utils.converters import optional_c, list_c
 
 __all__ = (
@@ -384,7 +383,9 @@ class Guild(Object, Serializable):
     """Whether the server has its widget enabled or not."""
     widget_channel_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
     """The ID of the channel which the widget targets, if present."""
-    roles: list[dict] | list[Role] | None = field(converter=optional_c(list_c(Role._c)), default=None)
+    roles: list[dict] | list[Role] | None = field(
+        converter=optional_c(list_c(Role._c)), default=None
+    )
     """The roles that the guild has, if present."""
     emojis: list[dict] | list[Emoji] | None = field(
         converter=optional_c(list_c(Emoji._c)), default=None
@@ -429,7 +430,9 @@ class Guild(Object, Serializable):
         converter=optional_c(WelcomeScreen._c), default=None
     )
     """The welcome screen of the guild, if present."""
-    stickers: list[dict] | list[Sticker] | None = field(converter=optional_c(list_c(Sticker._c)), default=None)
+    stickers: list[dict] | list[Sticker] | None = field(
+        converter=optional_c(list_c(Sticker._c)), default=None
+    )
     """The stickers that the guild owns."""
 
 
@@ -541,7 +544,7 @@ class GuildWidgetSettings(Serializable):
 
 
 @define(kw_only=True)
-class Member(Partial, Serializable):
+class Member(Partial, Controllable, Serializable):
     """
     Represents the member in a guild from Discord.
 
