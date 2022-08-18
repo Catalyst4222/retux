@@ -1,6 +1,5 @@
 from attrs import define
 
-from .abc import Event
 from ...client.resources.guild_scheduled_event import GuildScheduledEvent
 from ...client.resources.abc import Timestamp
 from ...client.resources.channel import Channel, ThreadChannel
@@ -9,7 +8,7 @@ from ...client.resources.stage_instance import StageInstance
 
 
 @define(kw_only=True, repr=False)
-class GuildCreate(Guild, Event):
+class GuildCreate(Guild):
     """
     Represents a `GUILD_CREATE` Gateway event from Discord.
 

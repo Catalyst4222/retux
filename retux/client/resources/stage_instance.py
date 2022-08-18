@@ -63,7 +63,10 @@ class StageInstance:
     """The privacy level of the stage instance."""
     discoverable_disabled: bool = field(default=False)
     """Whether or not Stage Discovery is disabled (deprecated)."""
-    guild_scheduled_event_id: str | Snowflake | None = field(converter=optional_c(Snowflake))
+    guild_scheduled_event_id: str | Snowflake | None = field(
+        converter=optional_c(Snowflake), default=None
+    )
     """The ID of the scheduled event for this stage instance."""
+
 
 Stage = StageInstance
