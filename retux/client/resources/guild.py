@@ -1,19 +1,16 @@
-from datetime import datetime
 from enum import IntFlag
 from typing import Any
 from enum import IntEnum
-from attrs import define, field
+from attrs import define
 
-from ..mixins import Serializable, Controllable
+from ..mixins import Controllable
 
 from .user import User, UserFlags, UserPremiumType
 from .emoji import Emoji
 from .sticker import Sticker
 from .role import Role
 
-from .abc import Object, Partial, Snowflake
-
-from ...utils.converters import optional_c, list_c
+from .abc import Object, Partial, Snowflake, Timestamp
 
 __all__ = (
     "Guild",
@@ -32,7 +29,7 @@ __all__ = (
 
 
 @define(kw_only=True)
-class WelcomeScreenChannel(Serializable):
+class WelcomeScreenChannel:
     """
     Represents a channel shown in the welcome screen of a guild from Discord.
 
@@ -48,13 +45,13 @@ class WelcomeScreenChannel(Serializable):
         The name of the emoji, if present.
     """
 
-    channel_id: str | Snowflake = field(converter=Snowflake)
+    channel_id: Snowflake
     """The ID of the channel shown."""
-    description: str = field()
+    description: str
     """A description shown with the channel."""
-    emoji_id: str | Snowflake | None = field(converter=Snowflake, default=None)
+    emoji_id: Snowflake = None
     """The ID of the emoji if it isn't a unicode."""
-    emoji_name: str | None = field(default=None)
+    emoji_name: str = None
     """The name of the emoji, if present."""
 
     @property
@@ -63,7 +60,7 @@ class WelcomeScreenChannel(Serializable):
 
 
 @define(kw_only=True)
-class WelcomeScreen(Serializable):
+class WelcomeScreen:
     """
     Represents the welcome screen in a guild from Discord.
 
@@ -82,11 +79,9 @@ class WelcomeScreen(Serializable):
         of `5` are shown.
     """
 
-    description: str | None = field(default=None)
+    description: str = None
     """The description of the guild in the welcome screen."""
-    welcome_channels: list[dict] | list[WelcomeScreenChannel] | None = field(
-        converter=optional_c(list_c(WelcomeScreenChannel._c)), default=None
-    )
+    welcome_channels: list[WelcomeScreenChannel] = None
     """
     The channels show in the welcome screen. A maximum
     of `5` are able to be shown.
@@ -202,7 +197,7 @@ class VerificationLevel(IntEnum):
 
 
 @define(repr=False)
-class UnavailableGuild(Partial, Object, Serializable):
+class UnavailableGuild(Partial, Object):
     """
     Represents an unavailable guild from Discord.
 
@@ -217,8 +212,8 @@ class UnavailableGuild(Partial, Object, Serializable):
         the class representation itself for this.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
-    unavailable: bool = field(default=True)
+    id: Snowflake
+    unavailable: bool = True
 
     def __repr__(self) -> bool:
         return self.unavailable
@@ -323,121 +318,109 @@ class Guild(Object):
         The stickers that the guild owns.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID of the guild."""
-    name: str = field()
+    name: str
     """The name of the guild."""
-    icon: str = field()
+    icon: str
     """The icon of the guild in a URL format."""
-    owner_id: str | Snowflake = field(converter=Snowflake)
+    owner_id: Snowflake
     """The ID of the owner of the guild."""
-    afk_timeout: int = field()
+    afk_timeout: int
     """The current set AFK timeout in seconds for the guild."""
-    verification_level: int | VerificationLevel = field(converter=VerificationLevel)
+    verification_level: VerificationLevel
     """The set verification level for members of the guild."""
-    default_message_notifications: int = field()
+    default_message_notifications: int
     """The default notifications level of the guild."""
-    explicit_content_filter: int | ExplicitContentFilterLevel = field(
-        converter=ExplicitContentFilterLevel
-    )
+    explicit_content_filter: ExplicitContentFilterLevel
     """The explicit content filter level of the guild."""
-    features: list[str] = field()
+    features: list[str]
     """The currently enabled features inside of the guild."""
-    mfa_level: int = field()
+    mfa_level: int
     """The required MFA (rep. by 2FA) level of the guild."""
-    system_channel_flags: int | SystemChannelFlags = field(converter=SystemChannelFlags)
+    system_channel_flags: SystemChannelFlags
     """The guild's welcome channel's flags for suppression."""
-    premium_tier: int = field()
+    premium_tier: int
     """The current server boosting tier level of the guild."""
-    preferred_locale: str = field()
+    preferred_locale: str
     """The preferred locale of the guild."""
-    nsfw_level: int = field()
+    nsfw_level: int
     """The currently set NSFW level of the guild."""
-    premium_progress_bar_enabled: bool = field()
+    premium_progress_bar_enabled: bool
     """Whether the guild has the server boosting bar enabled or not."""
-    owner: bool = field(default=False)
+    owner: bool = False
     """Whether the user who invoked the guild is the owner or not."""
-    afk_channel_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    afk_channel_id: Snowflake = None
     """The ID of the AFK channel inside the guild, if present."""
-    icon_hash: str | None = field(default=None)
+    icon_hash: str = None
     """
     The icon of the guild in a hash format.
 
     This hash is pre-determined by the API and does not reflect
     the URL path.
     """
-    splash: str | None = field(default=None)
+    splash: str = None
     """The hash of the guild's splash invite screen image, if present."""
-    discovery_splash: str | None = field(default=None)
+    discovery_splash: str = None
     """The hash of the guild's discovery splash screen image, if present."""
-    permissions: str | None = field(default=None)
+    permissions: str = None
     """The calculated permissions of the user invoking the guild, if present."""
-    region: str | None = field(default=None)
+    region: str = None
     """
     The ID of the voice region for the guild.
 
     This field has been deprecated as of `v8` and should no longer
     be used.
     """
-    widget_enabled: bool = field(default=False)
+    widget_enabled: bool = False
     """Whether the server has its widget enabled or not."""
-    widget_channel_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    widget_channel_id: Snowflake = None
     """The ID of the channel which the widget targets, if present."""
-    roles: list[dict] | list[Role] | None = field(
-        converter=optional_c(list_c(Role._c)), default=None
-    )
+    roles: list[Role] = None
     """The roles that the guild has, if present."""
-    emojis: list[dict] | list[Emoji] | None = field(
-        converter=optional_c(list_c(Emoji._c)), default=None
-    )
+    emojis: list[Emoji] = None
     """The Emojis that the guild owns."""
-    application_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    application_id: Snowflake = None
     """The ID of the application for the guild if created via. a bot."""
-    system_channel_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    system_channel_id: Snowflake = None
     """The ID of the system welcome messages channel, if present."""
-    rules_channel_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    rules_channel_id: Snowflake = None
     """The ID of the rules channel, if presently determined as a Community server."""
-    max_presences: int | None = field(default=None)
+    max_presences: int = None
     """
     The maximum amount of presences allowed in the guild. Always set to `0`
     underneath a guild size cap."""
-    max_members: int | None = field(default=None)
+    max_members: int = None
     """The maximum amount of members allowed in the guild.
     Globally set to `800000` currently.
     """
-    vanity_url_code: str | None = field(default=None)
+    vanity_url_code: str = None
     """The vanity URL of the guild, if present."""
-    description: str | None = field(default=None)
+    description: str = None
     """The description of the guild, if presently determined as a Community server."""
-    banner: str | None = field(default=None)
+    banner: str = None
     """The banner of the guild, if present."""
-    premium_subscription_count: int | None = field(default=None)
+    premium_subscription_count: int = None
     """The approximated count of boosts the guild has."""
-    public_updates_channel_id: str | Snowflake | None = field(
-        converter=optional_c(Snowflake), default=None
-    )
+    public_updates_channel_id: Snowflake = None
     """The community moderation-only ID of the channel in the guild, if present."""
-    max_video_channel_users: int = field(default=25)
+    max_video_channel_users: int = 25
     """
     The maximum amount of users in a voice channel allowed to have video on.
     Globally set to `25` currently.
     """
-    approximate_member_count: int | None = field(default=None)
+    approximate_member_count: int = None
     """The approximated member count of the guild."""
-    approximate_presence_count: int | None = field(default=None)
+    approximate_presence_count: int = None
     """The approximated amount of presences in the guild."""
-    welcome_screen: dict | WelcomeScreen | None = field(
-        converter=optional_c(WelcomeScreen._c), default=None
-    )
+    welcome_screen: WelcomeScreen = None
     """The welcome screen of the guild, if present."""
-    stickers: list[dict] | list[Sticker] | None = field(
-        converter=optional_c(list_c(Sticker._c)), default=None
-    )
+    stickers: list[Sticker] = None
     """The stickers that the guild owns."""
 
 
 @define(kw_only=True)
-class GuildPreview(Object, Serializable):
+class GuildPreview(Object):
     """
     Represents the preview of a guild from Discord.
 
@@ -470,61 +453,59 @@ class GuildPreview(Object, Serializable):
         The stickers of the guild being previewed.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID of the guild being previewed."""
-    name: str = field()
+    name: str
     """The name of the guild being previewed."""
-    features: list[str] = field()
+    features: list[str]
     """The enabled features of the previewed guild."""
-    emojis: list[dict] | list[Emoji] = field(converter=list_c(Emoji._c))
+    emojis: list[Emoji]
     """The guild's custom Emojis."""
-    approximate_member_count: int = field()
+    approximate_member_count: int
     """The approximated amount of members in the previewed guild."""
-    approximate_presence_count: int = field()
+    approximate_presence_count: int
     """The approximated count of presences in the previewed guild."""
-    icon: str | None = field(default=None)
+    icon: str = None
     """The icon of the guild being previewed, if present."""
-    splash: str | None = field(default=None)
+    splash: str = None
     """
     The splash invite background screen image of the previewed
     guild, if present.
     """
-    discovery_splash: str | None = field(default=None)
+    discovery_splash: str = None
     """
     The hash discovery splash screen image, of the previewed
     guild, if present.
     """
-    description: str | None = field(default=None)
+    description: str = None
     """
     The description of the guild being previewed, if presently
     determined as a Community server.
     """
-    stickers: list[dict] | list[Sticker] | None = field(
-        converter=optional_c(list_c(Sticker._c)), default=None
-    )
+    stickers: list[Sticker] = None
     """The stickers of the guild being previewed."""
 
 
 @define(kw_only=True)
-class GuildWidget(Object, Serializable):
+class GuildWidget(Object):
     """Represents the widget of a guild from Discord."""
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID of the guild on the widget."""
-    name: str = field()
+    name: str
     """The name of the guild on the widget."""
     # TODO: implement Partial Channel object.
     # channels: list[dict] | list[PartialChannel] = field(converter=list_c(PartialChannel))
     # TODO: implement Partial Member object.
     # members: list[dict] | list[PartialMember] = field(converter=list_c(PartialMember))
-    presence_count: int = field()
+    presence_count: int
     """The amount of members online in the guild."""
-    instant_invite: str | None = field(default=None)
+    instant_invite: str = None
     """An instant invite provided for the guild if it exists."""
 
 
 @define(kw_only=True)
-class GuildWidgetSettings(Serializable):
+class GuildWidgetSettings:
     """
     Represents the settings of a widget of a guild in Discord.
 
@@ -537,14 +518,14 @@ class GuildWidgetSettings(Serializable):
         if present.
     """
 
-    enabled: bool = field()
+    enabled: bool
     """Whether the widget is enabled for the guild or not."""
-    channel_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    channel_id: Snowflake = None
     """The ID of the channel shown in the guild's widget, if present."""
 
 
 @define(kw_only=True)
-class Member(Partial, Controllable, Serializable):
+class Member(Partial):
     """
     Represents the member in a guild from Discord.
 
@@ -638,57 +619,51 @@ class Member(Partial, Controllable, Serializable):
         The type of Nitro subscription the user has, if present.
     """
 
-    user: dict | User | None = field(converter=optional_c(User._c), default=None)
+    user: User = None
     """
     The user representation of the member in the guild. This is only `None` when
     provided in a `MESSAGE_CREATE` or `MESSAGE_UPDATE` Gateway event.
     """
-    nick: str | None = field(default=None)
+    nick: str = None
     """The nickname of the member in the guild, if present."""
-    avatar: str | None = field(default=None)
+    avatar: str = None
     """The hash of the guild member's avatar, if present."""
     # TODO: change roles field to give a list of Role objects. This is an API
     # limitation.
-    roles: list[str] | list[Snowflake] | None = field(
-        converter=optional_c(list_c(Snowflake)), default=None
-    )
+    roles: list[Snowflake] = None
     """
     The roles of the member in the guild, if present.
 
     Roles are only provided in the form of `Snowflake` objects, and are not given
     as a `Role` object. This is subject to change in the future.
     """
-    joined_at: str | datetime = field(converter=datetime.fromisoformat)
+    joined_at: Timestamp
     """The time at which the member joined the guild."""
-    premium_since: str | datetime | None = field(
-        converter=optional_c(datetime.fromisoformat), default=None
-    )
+    premium_since: Timestamp = None
     """The time at which the member began boosting the guild, if present."""
-    deaf: bool = field(default=False)
+    deaf: bool = False
     """
     Whether the member is deafened in any of the guild's voice channels or not.
     Defaults to `False`.
     """
-    mute: bool = field(default=False)
+    mute: bool = False
     """
     Whether the member is muted in any of the guild's voice channels or not.
     Defaults to `False`.
     """
-    pending: bool = field(default=False)
+    pending: bool = False
     """
     Whether the member is still pending access to join the guild or not.
     Defaults to `False`. This is only supplied when any Gateway event that
     is not intended for guilds.
     """
-    permissions: str | None = field(default=None)
+    permissions: str = None
     """
     The calculated permissions of the member in the guild, including
     any overwrites. This is only returned when passed inside of an
     `Interaction` object.
     """
-    communication_disabled_until: str | datetime | None = field(
-        converter=optional_c(datetime.fromisoformat), default=None
-    )
+    communication_disabled_until: Timestamp = None
     """
     The time remaining until the member of the guild has their timeout
     removed. This is `None` when a timeout has not yet  been applied,

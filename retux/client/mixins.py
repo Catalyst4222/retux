@@ -1,9 +1,8 @@
 from ..api.http import _Route, _RouteMethod
-from ..utils.validators import dataclass_v
 
 from attrs import asdict
 
-__all__ = ("Respondable", "Controllable", "Editable", "Serializable")
+__all__ = ("Respondable", "Controllable", "Editable")
 
 
 class Editable:
@@ -189,36 +188,3 @@ class Controllable:
         """
         route = _Route(method=_RouteMethod.GET, path=path)
         return await bot.http.request(route, payload=query_params)
-
-
-class Serializable:
-    """
-    A mixin for structures that need to be generated from a `dict`.
-
-    This class exists to simplify compatibility with attrs converters.
-
-    Methods
-    -------
-    _c() : `object`
-        Converts a `dict provided by Discord to an instance
-        of the class.
-    """
-    @classmethod
-    def _c(cls, json: dict) -> object:
-        """
-        Converts a `dict` provided by Discord to an instance
-        of the class.
-
-        Parameters
-        ----------
-        json : `dict`
-            A `dict` representing data from Discord.
-        
-        Returns
-        -------
-        `object`
-            An instance of the class.
-        """
-        allowed = dataclass_v(cls)
-
-        return cls(**{k: v for k, v in json.items() if k in allowed})

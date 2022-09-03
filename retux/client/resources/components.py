@@ -66,9 +66,9 @@ class ActionRow(Component):
         The components stored under the action row.
     """
 
-    type: int | ComponentType = field(converter=ComponentType, default=ComponentType.ACTION_ROW)
+    type: ComponentType = ComponentType.ACTION_ROW
     """The type of component, as `ComponentType.ACTION_ROW`."""
-    components: list[Component] = field(converter=list_c(Component))
+    components: list[Component]
     """The components stored in the action row."""
 
 
@@ -152,22 +152,22 @@ class Button(Component):
         Whether the button is disabled for usage or not. Defaults to `False`.
     """
 
-    type: int | ComponentType = field(converter=ComponentType, default=ComponentType.BUTTON)
+    type: ComponentType = ComponentType.BUTTON
     """The type of component, as `ComponentType.BUTTON`."""
-    style: int | ButtonStyle = field(converter=ButtonStyle)
+    style: ButtonStyle
     """The style of the button. Please see `Button` for usage."""
-    label: str | None = field(default=None)
+    label: str = None
     """The labelled contents of the button. The maximum length is 80 characters."""
 
     # TODO: implement a partial emoji abc.
     # emoji: dict | PartialEmoji | None = field(converter=PartialEmoji, default=None)
     # """The emoji related to the button, if present."""
 
-    custom_id: str | None = field(default=None)
+    custom_id: str = None
     """A customisable identifiable descriptor for the button."""
-    url: str | None = field(default=None)
+    url: str = None
     """The URL relating to the button."""
-    disabled: bool = field(default=False)
+    disabled: bool = None
     """Whether the button is disabled for usage or not. Defaults to `False`."""
 
 
@@ -190,18 +190,18 @@ class SelectOption:
         Defaults to `False`.
     """
 
-    label: str = field()
+    label: str
     """The label of the select option."""
-    value: str = field()
+    value: str
     """The value of the select option."""
-    description: str | None = field(default=None)
+    description: str = None
     """An additional description of the select option, if present."""
 
     # TODO: implement a partial emoji abc.
     # emoji: dict | PartialEmoji | None = field(default=None)
     # """The emoji related to the select option, if present."""
 
-    default: bool = field(default=False)
+    default: bool = False
     """Whether the select option is chosen by default or not. Defaults to `False`."""
 
 
@@ -231,25 +231,25 @@ class SelectMenu(Component):
         to `False`.
     """
 
-    type: int | ComponentType = field(converter=ComponentType, default=ComponentType.SELECT_MENU)
+    type: ComponentType = ComponentType.SELECT_MENU
     """The type of component, as `ComponentType.SELECT_MENU`."""
-    custom_id: str = field()
+    custom_id: str
     """A customisable identifiable descriptor for the select menu."""
-    options: list[SelectOption] = field(converter=list_c(SelectOption))
+    options: list[SelectOption]
     """The options of the select menu."""
-    placeholder: str | None = field(default=None)
+    placeholder: None
     """The placeholder text of the select menu, if present."""
-    min_values: int = field(default=1)
+    min_values: int = 1
     """
     The minimum number of options needed for the menu
     in-between 0-25. Defaults to `1`.
     """
-    max_values: int = field(default=1)
+    max_values: int = 1
     """
     The maximum number of options needed for the menu
     in-between 1-25. Defaults to `1`.
     """
-    disabled: bool = field(default=False)
+    disabled: bool = False
     """Whether the select menu is disabled for usage or not. Defaults to `False`."""
 
 
@@ -302,29 +302,29 @@ class TextInput(Component):
         The maximum length is 100 characters.
     """
 
-    type: int | ComponentType = field(converter=ComponentType, default=ComponentType.TEXT_INPUT)
+    type: ComponentType = ComponentType.TEXT_INPUT
     """The type of component, as `ComponentType.TEXT_INPUT`."""
-    custom_id: str = field()
+    custom_id: str
     """A customisable identifiable descriptor for the text input."""
-    style: int | TextInputStyle = field(converter=TextInputStyle)
+    style: TextInputStyle
     """The style of the text input."""
-    label: str = field()
+    label: str
     """The labelled contents of the modal. The maximum length is 45 characters."""
-    min_length: int = field(default=0)
+    min_length: int = 0
     """
     The minimum allowed length for a text input in-between
     1-4000 characters. Defaults to `0`.
     """
-    max_length: int = field(default=1)
+    max_length: int = 1
     """
     The maximum allowed length for a text input in-between
     1-4000 characters. Defaults to `1`.
     """
-    required: bool = field(default=True)
+    required: bool = True
     """Whether the text input is required to be filled or not. Defaults to `True`."""
-    value: str | None = field(default=None)
+    value: str = None
     """A pre-filled value for the text input, if present. The maximum length is 4000 characters."""
-    placeholder: str | None = field(default=None)
+    placeholder: str = None
     """The placeholder text of the text input, if present. The maximum length is 100 characters."""
 
 

@@ -1,15 +1,12 @@
-from attrs import define, field
+from attrs import define
 
-from ..mixins import Serializable
 from .abc import Object, Snowflake
 from .user import User
 from .role import Role
-from ..mixins import Serializable
-from ...utils import optional_c, list_c
 
 
 @define()
-class Emoji(Object, Serializable):
+class Emoji(Object):
     """
     Represents an Emoji from Discord.
 
@@ -40,13 +37,13 @@ class Emoji(Object, Serializable):
         the emoji lost a level of boosting.
     """
 
-    id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    id: Snowflake = None
     """
     The ID of the Emoji.
 
     Only available on guild created emojis.
     """
-    name: str | None = field(default=None)
+    name: str = None
     """
     The name of the emoji.
 
@@ -54,17 +51,17 @@ class Emoji(Object, Serializable):
     is standard, otherwise it is the name
     of the emoji.
     """
-    roles: list[dict] | list[Role] | None = field(converter=optional_c(list_c(Role._c)), default=None)
+    roles: list[Role] = None
     """A list of roles allowed to use this emoji."""
-    user: dict | User | None = field(converter=optional_c(User._c), default=None)
+    user: User = None
     """The user that created the emoji."""
-    require_colons: bool | None = field(default=None)
+    require_colons: bool = None
     """Whether or not the emoji needs to be wrapped in colons."""
-    managed: bool | None = field(default=None)
+    managed: bool = None
     """Whether or not the emoji is managed."""
-    animated: bool | None = field(default=None)
+    animated: bool = None
     """Whether or not the emoji is animated."""
-    available: bool = field(default=False)
+    available: bool = None
     """
     Whether or not the emoji is available.
 

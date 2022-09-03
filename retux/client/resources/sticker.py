@@ -1,10 +1,8 @@
 from enum import IntEnum
-from attrs import define, field
+from attrs import define
 
-from ..mixins import Serializable
 from .abc import Object, Snowflake
 from .user import User
-from ...utils.converters import list_c, optional_c
 
 
 class StickerType(IntEnum):
@@ -56,7 +54,7 @@ class StickerFormatType(IntEnum):
 
 
 @define(kw_only=True)
-class Sticker(Object, Serializable):
+class Sticker(Object):
     """
     Represents a sticker from Discord.
 
@@ -108,20 +106,20 @@ class Sticker(Object, Serializable):
         part of a pack and owned by Discord.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID of the sticker."""
-    pack_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    pack_id: Snowflake = None
     """
     The ID of the pack containing the sticker.
 
     Only standard stickers owned by Discord
     can be part of a sticker pack.
     """
-    name: str = field()
+    name: str
     """The name of the sticker."""
-    description: str | None = field(default=None)
+    description: str = None
     """The description of the sticker."""
-    tags: str = field()
+    tags: str
     """
     The tags or emoji equivelent of a sticker.
 
@@ -130,34 +128,34 @@ class Sticker(Object, Serializable):
     keywords. If the sticker is guild owned, it
     will be the name of an emoji.
     """
-    asset: str = field(default="")
+    asset: str = ""
     """An empty string previously for the sticker asset hash."""
-    type: int | StickerType = field(converter=StickerType)
+    type: StickerType
     """The type of the sticker."""
-    format_type: int | StickerFormatType = field(converter=StickerFormatType)
+    format_type: StickerFormatType
     """The formatting type that the sticker uses."""
-    available: bool = field(default=True)
+    available: bool = True
     """
     Whether or not the sticker is availible.
 
     May be false if the guild that owns it
     has lost a level of boosting.
     """
-    guild_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    guild_id: Snowflake = None
     """
     The ID of the guild that owns the sticker.
 
     Will only be set to None if the sticker is
     owned by Discord.
     """
-    user: dict | User | None = field(converter=optional_c(User._c), default=None)
+    user: User = None
     """
     The user that uploaded the sticker.
 
     Will only be set to None if the sticker is
     owned by Discord.
     """
-    sort_value: int | None = field(default=None)
+    sort_value: int = None
     """
     The sticker's order within its sticker pack.
 
@@ -177,7 +175,7 @@ class Sticker(Object, Serializable):
 
 
 @define(kw_only=True)
-class StickerItem(Object, Serializable):
+class StickerItem(Object):
     """
     Represents the bare information needed
     to begin loading a sticker from Discord.
@@ -192,16 +190,16 @@ class StickerItem(Object, Serializable):
         The type of formatting of the sticker being represented.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID of the sticker being represented."""
-    name: str = field()
+    name: str
     """The name of the sticker being represented."""
-    format_type: int | StickerFormatType = field(converter=StickerFormatType)
+    format_type: StickerFormatType
     """The type of formatting of the sticker being represented."""
 
 
 @define(kw_only=True)
-class StickerPack(Object, Serializable):
+class StickerPack(Object):
     """
     Represents a sticker pack from Discord.
 
@@ -223,17 +221,17 @@ class StickerPack(Object, Serializable):
         The ID of the sticker packs's banner image.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID of the sticker pack."""
-    stickers: list[dict] | list[Sticker] = field(converter=list_c(Sticker._c))
+    stickers: list[Sticker]
     """The stickers within the sticker pack."""
-    name: str = field()
+    name: str
     """The name of the sticker pack."""
-    sku_id: str | Snowflake = field(converter=Snowflake)
+    sku_id: Snowflake
     """The ID of the pack's SKU."""
-    cover_sticker_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    cover_sticker_id: Snowflake = None
     """The ID of the sticker featured as the pack's icon."""
-    description: str = field()
+    description: str
     """The description of the sticker pack."""
-    banner_asset_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    banner_asset_id: Snowflake = None
     """The ID of the sticker packs's banner image."""

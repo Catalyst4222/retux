@@ -7,7 +7,7 @@ from time import perf_counter
 from typing import Any, Protocol
 
 from attrs import asdict, define, field
-from cattrs import structure_attrs_fromdict
+from cattrs import structure
 from trio import open_nursery, sleep, Nursery
 from trio_websocket import ConnectionClosed, WebSocketConnection, open_websocket_url
 
@@ -25,7 +25,6 @@ from .events.connection import HeartbeatAck, InvalidSession, Ready, Reconnect, R
 
 from ..client.flags import Intents
 from ..client.resources.abc import Snowflake
-from ..client.mixins import Serializable
 from ..const import MISSING, NotNeeded, __gateway_url__
 
 logger = getLogger(__name__)
@@ -283,7 +282,7 @@ class GatewayClient(GatewayProtocol):
         try:
             resp = await self._conn.get_message()
             json = loads(resp)
-            return structure_attrs_fromdict(json, _GatewayPayload)
+            return structure(json, _GatewayPayload)
         except ConnectionClosed:
             logger.error("The connection to Discord's Gateway has closed.")
             await self._error()
@@ -478,7 +477,7 @@ class GatewayClient(GatewayProtocol):
         self._bots.append(bot)
 
     async def _dispatch(
-        self, _name: str, data: list[dict] | dict | Serializable | MISSING, *args, **kwargs
+        self, _name: str, data: list[dict] | dict | type | MISSING, *args, **kwargs
     ):
         """
         Dispatches an event from the Gateway.
@@ -523,7 +522,7 @@ class GatewayClient(GatewayProtocol):
                     kwargs["bot_inst"] = bot
                 await bot._trigger(
                     _name.lower(),
-                    data(kwargs),
+                    structure(kwargs, data),
                 )
 
     async def _identify(self):
@@ -593,7 +592,7 @@ class GatewayClient(GatewayProtocol):
             Whether you only want to receive guild members with
             a presence. The `GUILD_PRESENCES` intent must be
             enabled in order to use.
-        user_ids : `Snowflake` or `list[Snowflake]`, optional
+        user_ids : `Snowflake`, `list[Snowflake]`, optional
             The IDs of members in the guild to return. This
             may be used in conjunction to `query`, and poses the
             same maximum as `limit` regardless of declaration.
@@ -655,6 +654,39 @@ class GatewayClient(GatewayProtocol):
             },
         )
         logger.debug("Sending a payload requesting a voice state update to the Gateway.")
+        await self._send(payload)
+
+    async def update_presence(
+        self,
+        # TODO: Implement Activity object.
+        # activities: list[Activity],
+        status: NotNeeded[str] = MISSING,
+        afk: NotNeeded[bool] = MISSING,
+    ):
+        """
+        Sends a request updating the bots presence to the Gateway.
+
+        Parameters
+        ----------
+        status : `str`, optional
+            The activity status of the bot while connected
+            to Discord.
+            e.g. "online", "dnd"
+        afk : `bool`, optional
+            Whether the bot is AFK or not. This is used in favour of
+            allowing `since`, a client-determined variable. You may
+            use this instead of writing "idle" to `status`.
+        """
+        payload = _GatewayPayload(
+            op=_GatewayOpCode.PRESENCE_UPDATE,
+            d={
+                "since": 0,
+                # "activities": asdict(activities),
+                "status": "online" if status is MISSING else status,
+                "afk": False if afk is MISSING and status != "idle" else afk,
+            },
+        )
+        logger.debug("Sending a payload requesting a presence update to the Gateway.")
         await self._send(payload)
 
     @property

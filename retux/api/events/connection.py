@@ -1,15 +1,14 @@
-from attrs import define, field
+from attrs import define
 
-from ...client.mixins import Serializable
 from ...client.resources.guild import UnavailableGuild
+from ...client.resources.user import User
 from ...client.resources.application import PartialApplication
-from ...utils import list_c
 
 __all__ = ("Ready", "HeartbeatAck", "Resumed", "Reconnect", "InvalidSession")
 
 
-@define()
-class Ready(Serializable):
+@define(kw_only=True)
+class Ready:
     """
     Represents when the client has successfully connected.
 
@@ -48,44 +47,43 @@ class Ready(Serializable):
         The used version of the Discord API.
     """
 
-    v: int = field(kw_only=True)
+    v: int
     """The used version of the Discord API."""
-    user_settings: dict | None = field(default=None, kw_only=True)
+    user_settings: dict = None
     """The settings of the bot application, if present."""
-    # TODO: implement User object
-    user: dict = field(kw_only=True)
+    user: User
     """The user form of the bot application."""
-    guilds: list[dict] | list[UnavailableGuild] = field(
-        converter=list_c(UnavailableGuild), kw_only=True
-    )
+    guilds: list[UnavailableGuild]
     """The guilds unavailable to the bot."""
     # TODO: Investigate the guild_join_requests field.
-    guild_join_requests: list | None = field(default=None, kw_only=True)
+    guild_join_requests: list = None
     """
     The pending approval requests for guilds the bot cannot access.
 
     Some data is conferred here supplied from `guilds`.
     """
-    geo_ordered_rtc_regions: list[str] = field(kw_only=True)
+    # geo_ordered_rtc_regions: list[str]
+    geo_ordered_rtc_regions: list
     """The RTC voice regions accessible to the bot application."""
-    session_type: str = field(kw_only=True)
+    session_type: str
     """The type of session that the bot has established with the Gateway."""
-    session_id: str = field(kw_only=True)
+    session_id: str
     """The ID of the bot's Gateway connection session, used for reconnection."""
-    resume_gateway_url: str = field(kw_only=True)
+    resume_gateway_url: str
     """The URL of the Gateway upon resuming an existing connection."""
     # TODO: Investigate the relationships field.
-    relationships: list | None = field(default=None, kw_only=True)
+    relationships: list = None
     """The relationships associated to the bot application, if present."""
     # TODO: Investigate the private_channels field.
-    private_channels: list | None = field(default=None, kw_only=True)
+    private_channels: list = None
     """The private channels of the bot application, if present."""
     # TODO: Investigate the presences field.
-    presences: list | None = field(default=None, kw_only=True)
+    presences: list = None
     """The presences of the bot application, if present."""
-    shard: list[int] | None = field(default=None, kw_only=True)
+    # shard: list[int] = None
+    shard: list = None
     """The shards of the Gateway connection, if present."""
-    application: dict | PartialApplication = field(converter=PartialApplication, kw_only=True)
+    application: PartialApplication
     """The application form of the bot. Contains only `id` and `flags`."""
 
     @property
@@ -94,8 +92,8 @@ class Ready(Serializable):
         return self.v
 
 
-@define()
-class HeartbeatAck(Serializable):
+@define
+class HeartbeatAck:
     """
     Represents when the client's Gateway connection has validated a heartbeat.
 
@@ -105,12 +103,12 @@ class HeartbeatAck(Serializable):
         The latency or difference in milliseconds between heartbeats.
     """
 
-    latency: float = field(kw_only=True)
+    latency: float
     """The latency or difference in milliseconds between heartbeats."""
 
 
-@define()
-class Resumed(Serializable):
+@define(kw_only=True)
+class Resumed:
     """
     Represents when the client has successfully resumed a connection.
 
@@ -124,11 +122,11 @@ class Resumed(Serializable):
         The last sequence number given for the session.
     """
 
-    token: str = field(kw_only=True)
+    token: str
     """The token of the bot used."""
-    session_id: str = field(kw_only=True)
+    session_id: str
     """The ID of the Gateway connection session."""
-    seq: int = field(kw_only=True)
+    seq: int
     """The last sequence number given for the session."""
 
 
@@ -178,7 +176,7 @@ class InvalidSession:
         Checks the session to see if a reconnection is possible.
     """
 
-    _invalid_session: bool = field(default=False)
+    _invalid_session: bool = False
     """
     Whether the session can be reconnected to or not.
     This should never need to be called upon directly.

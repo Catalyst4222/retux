@@ -1,10 +1,9 @@
 from enum import IntEnum
 
-from attrs import define, field
+from attrs import define
 
 from .abc import Object, Snowflake
 
-from ...utils.converters import list_c, optional_c
 
 __all__ = ("ApplicationCommand", "ApplicationCommandOption", "ApplicationCommandOptionChoice")
 
@@ -24,11 +23,11 @@ class ApplicationCommandOptionChoice:
         The value of the application command option type. The maximum length is 100 characters if `STRING`.
     """
 
-    name: str = field()
+    name: str
     """The name of the application command option choice in-between 1-100 characters."""
-    name_localizations: dict[str, str] | None = field(default=None)
+    name_localizations: dict[str, str] = None
     """The localised dictionary of names for the application command option choices, if present."""
-    value: str | int = field()
+    value: str | int
     """The value of the application command option type. The maximum length is 100 characters if `STRING`."""
 
 
@@ -103,32 +102,26 @@ class ApplicationCommandOption:
         The option must be from a `STRING`, `INTEGER` or `NUMBER` type.
     """
 
-    type: int | ApplicationCommandOptionType = field(
-        converter=optional_c(ApplicationCommandOptionType), default=None
-    )
+    type: ApplicationCommandOptionType = None
     """The type of application command option."""
-    name: str = field()
+    name: str
     """The name of the option in-between 1-32 characters."""
-    name_localizations: dict[str, str] | None = field(default=None)
+    name_localizations: dict[str, str] = None
     """The localised dictionary of names for the application command option, if present."""
-    description: str = field()
+    description: str
     """The description of the option in-between 1-100 characters."""
-    description_localizations: dict[str, str] | None = field(default=None)
+    description_localizations: dict[str, str] = None
     """The localised dictionary of descriptions for the application command option, if present."""
-    required: bool | None = field(default=None)
+    required: bool = None
     """Whether the application command option is required to be entered or not."""
-    choices: list[ApplicationCommandOptionChoice] | None = field(
-        converter=optional_c(list_c(ApplicationCommandOptionChoice)), default=None
-    )
+    choices: list[ApplicationCommandOptionChoice] = None
     """
     Pre-filled selection choices of an application command option.
 
     The choices must be from a `STRING`, `INTEGER` or `NUMBER` type.
     An application command option can have a maximum of 25 choices.
     """
-    options: list[dict] | list["ApplicationCommandOption"] | None = field(
-        converter=optional_c(list_c("ApplicationCommandOption")), default=None
-    )
+    options: list["ApplicationCommandOption"] = None
     """
     The options of the application command, if present.
     Options are only present on `CHAT_INPUT` command types.
@@ -141,15 +134,15 @@ class ApplicationCommandOption:
     # channel_types: list[ChannelType] | None = field(default=None)
     # """The types of channels the option will filter to, if present."""
 
-    min_value: int | None = field(default=None)
+    min_value: int = None
     """The minimum value permitted for the application command option."""
-    max_value: int | None = field(default=None)
+    max_value: int = None
     """The maximum value permitted for the application command option."""
-    min_length: int | None = field(default=None)
+    min_length: int = None
     """The minimum length permitted for the application command option. The minimum allowed is `0`."""
-    max_length: int | None = field(default=None)
+    max_length: int = None
     """The maximum length permitted for the application command option. The maximum allowed is `1`."""
-    autocomplete: bool | None = field(default=None)
+    autocomplete: bool = None
     """
     Whether the application command option is autocompleted or not.
 
@@ -204,36 +197,34 @@ class ApplicationCommand(Object):
         The internal version of application commands released. This auto-increments over time.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID of the application command."""
-    type: int | ApplicationCommandType = field(converter=ApplicationCommandType)
+    type: ApplicationCommandType
     """The type of application command."""
-    application_id: str | Snowflake = field(converter=Snowflake)
+    application_id: Snowflake
     """The ID of the application the command is under."""
-    guild_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    guild_id: Snowflake = None
     """The ID of the guild the command is under, if present."""
-    name: str = field()
+    name: str
     """The name of the command in-between 1-32 characters."""
-    name_localizations: dict[str, str] | None = field(default=None)
+    name_localizations: dict[str, str] = None
     """The localised dictionary of names for the application command, if present."""
-    description: str = field()
+    description: str
     """
     The description of the command in-between 1-100 characters.
     Descriptions are only present on `CHAT_INPUT` command types.
     """
-    description_localizations: dict[str, str] | None = field(default=None)
+    description_localizations: dict[str, str] = None
     """The localised dictionary of descriptions for the application command, if present."""
-    options: list[dict] | list[ApplicationCommandOption] | None = field(
-        converter=optional_c(list_c(ApplicationCommandOption)), default=None
-    )
+    options: list[ApplicationCommandOption] = None
     """
     The options of the application command, if present.
     A maximum of 25 options are allowed. Options are only
     present on `CHAT_INPUT` command types.
     """
-    default_member_permissions: str | None = field(default=None)
+    default_member_permissions: str = None
     """The default permissions of the application command, if present."""
-    dm_permission: bool | None = field(default=None)
+    dm_permission: bool = None
     """Whether the application command is able to be ran in DMs or not."""
-    version: str | Snowflake = field(converter=Snowflake)
+    version: Snowflake
     """The internal version of application commands released. This auto-increments over time."""

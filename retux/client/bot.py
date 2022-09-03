@@ -7,6 +7,7 @@ from ..api import GatewayClient
 from ..api.http import HTTPClient
 from ..const import MISSING, NotNeeded
 from .flags import Intents
+from ..utils.hooks import cattrs_structure_hooks
 
 logger = getLogger(__name__)
 
@@ -69,6 +70,8 @@ class Bot(BotProtocol):
         self.intents = intents
         self._gateway = MISSING
         self.http = MISSING
+
+        cattrs_structure_hooks()
 
     def start(self, token: str):
         """

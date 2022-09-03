@@ -1,8 +1,6 @@
 from .abc import Snowflake, Object
-from ..mixins import Serializable
-from ...utils.converters import optional_c
 
-from attrs import define, field
+from attrs import define
 
 
 __all__ = (
@@ -12,7 +10,7 @@ __all__ = (
 
 
 @define(kw_only=True)
-class RoleTags(Serializable):
+class RoleTags:
     """
     Represents the tags of a role from Discord.
 
@@ -26,16 +24,16 @@ class RoleTags(Serializable):
         Whether this is the guild's premium subscriber role.
     """
 
-    bot_id: Snowflake | str | None = field(converter=optional_c(Snowflake), default=None)
+    bot_id: Snowflake = None
     """The id of the bot this role belongs to."""
-    integration_id: Snowflake | str | None = field(converter=optional_c(Snowflake), default=None)
+    integration_id: Snowflake = None
     """The id of the integration this role belongs to."""
-    premium_subscriber: bool = field(default=False)
+    premium_subscriber: bool = False
     """Whether this is the guild's premium subscriber role."""
 
 
 @define(kw_only=True)
-class Role(Object, Serializable):
+class Role(Object):
     """
     Represents a role from Discord.
 
@@ -63,25 +61,25 @@ class Role(Object, Serializable):
         The tags this role has, if present.
     """
 
-    id: Snowflake | str = field(converter=Snowflake)
+    id: Snowflake
     """The ID of the role."""
-    name: str = field()
+    name: str
     """The name of the role."""
-    color: int = field()
+    color: int
     """The integer representation of hexadecimal color code of the role."""
-    hoist: bool = field()
+    hoist: bool
     """If this role is pinned in the user listing."""
-    icon: str | None = field(default=None)
+    icon: str = None
     """The role icon hash, if present."""
-    unicode_emoji: str | None = field(default=None)
+    unicode_emoji: str = None
     """The emoji unicode of the role, if present."""
-    position: int = field()
+    position: int
     """The position of the role."""
-    permissions: str = field()
+    permissions: str
     """The role's permission bit set."""
-    managed: bool = field()
+    managed: bool
     """Whether this role is managed by an integration."""
-    mentionable: bool = field()
+    mentionable: bool
     """Whether this role is mentionable."""
-    tags: RoleTags | None = field(converter=optional_c(RoleTags._c), default=None)
+    tags: RoleTags = None
     """The tags this role has, if present."""

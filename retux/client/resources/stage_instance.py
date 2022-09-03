@@ -1,7 +1,6 @@
 from .abc import Snowflake
-from ...utils.converters import optional_c
 
-from attrs import define, field
+from attrs import define
 from enum import IntEnum
 
 __all__ = (
@@ -28,7 +27,7 @@ class StagePrivacyLevel(IntEnum):
     """The stage instance is visible to only guild members."""
 
 
-@define
+@define(kw_only=True)
 class StageInstance:
     """
     A class object representing a stage instance from Discord.
@@ -51,21 +50,19 @@ class StageInstance:
         The ID of the scheduled event for this Stage instance.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID of this stage instance."""
-    guild_id: str | Snowflake = field(converter=Snowflake)
+    guild_id: Snowflake
     """The guild ID of the associated stage channel."""
-    channel_id: str | Snowflake = field(converter=Snowflake)
+    channel_id: Snowflake
     """The ID of the associated stage channel."""
-    topic: str = field()
+    topic: str
     """The topic of the stage instance (1-120 characters)."""
-    privacy_level: int | StagePrivacyLevel = field(converter=StagePrivacyLevel)
+    privacy_level: StagePrivacyLevel
     """The privacy level of the stage instance."""
-    discoverable_disabled: bool = field(default=False)
+    discoverable_disabled: bool = False
     """Whether or not Stage Discovery is disabled (deprecated)."""
-    guild_scheduled_event_id: str | Snowflake | None = field(
-        converter=optional_c(Snowflake), default=None
-    )
+    guild_scheduled_event_id: Snowflake
     """The ID of the scheduled event for this stage instance."""
 
 

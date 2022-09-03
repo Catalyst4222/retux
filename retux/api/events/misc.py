@@ -3,7 +3,6 @@ from attrs import define, field
 
 from ...client.resources.abc import Snowflake
 from ...client.resources.guild import Member
-from ...utils.converters import optional_c
 
 
 @define(kw_only=True)
@@ -31,20 +30,20 @@ class TypingStart:
         outside of a DM.
     """
 
-    channel_id: str | Snowflake = field(converter=Snowflake)
+    channel_id: Snowflake
     """The ID of the channel when typing occured."""
-    user_id: str | Snowflake = field(converter=Snowflake)
+    user_id: Snowflake
     """The ID of the user who started typing."""
-    timestamp: int | datetime = field(converter=datetime.fromtimestamp)
+    timestamp: datetime = field(converter=datetime.fromtimestamp)
     """The timestamp of when the typing occured."""
-    guild_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    guild_id: Snowflake = None
     """
     The ID of the guild when typing occured.
 
     This will only appear when a user is typing
     outside of a DM.
     """
-    member: dict | Member | None = field(converter=optional_c(Member._c), default=None)
+    member: Member = None
     """
     The member who started typing.
 

@@ -1,7 +1,6 @@
 from enum import IntEnum, IntFlag
-from attrs import define, field
+from attrs import define
 
-from ..mixins import Serializable
 from .abc import Snowflake, Object
 
 __all__ = ("User", "UserFlags", "UserPremiumType")
@@ -63,7 +62,7 @@ class UserPremiumType(IntEnum):
 
 
 @define(kw_only=True)
-class User(Object, Serializable):
+class User(Object):
     """
     Represents a user from Discord.
 
@@ -118,35 +117,35 @@ class User(Object, Serializable):
         The mentionable version of the user.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID of the user."""
-    username: str = field()
+    username: str
     """The name of the user."""
-    discriminator: str = field()
+    discriminator: str
     """The discriminator (4-digit tag) of the user."""
-    avatar: str | None = field(default=None)
+    avatar: str = None
     """The hash of the user's avatar."""
-    bot: bool = field(default=False)
+    bot: bool = False
     """Whether the user is a bot or not."""
-    system: bool = field(default=False)
+    system: bool = False
     """Whether the user is from the official Discord System or not."""
-    mfa_enabled: bool = field(default=False)
+    mfa_enabled: bool = False
     """Whether the user has 2FA (two-factor authentication) enabled or not."""
-    banner: str | None = field(default=None)
+    banner: str | None = False
     """The hash of the user's banner, if present."""
-    accent_color: int | None = field(default=None)
+    accent_color: int = None
     """The color of the user's banner, if present."""
-    locale: str | None = field(default=None)
+    locale: str = None
     """The user's selected locale, if present."""
-    verified: bool = field(default=True)
+    verified: bool = True
     """Whether the user has a verified e-mail or not."""
-    email: str | None = field(default=None)
+    email: str = None
     """The e-mail associated to the user's account, if present."""
-    flags: int | UserFlags = field(converter=UserFlags, default=0)
+    flags: UserFlags = 0
     """The public flags on the user's account, if present."""
-    premium_type: int | UserPremiumType = field(converter=UserPremiumType, default=0)
+    premium_type: UserPremiumType = 0
     """The type of Nitro subscription the user has."""
-    public_flags: int | UserFlags = field(converter=UserFlags, default=0)
+    public_flags: UserFlags = 0
     """The public flags on the user's account, if present."""
 
     @property

@@ -1,16 +1,13 @@
-from .abc import Snowflake
-from ...utils.converters import optional_c
-from ..mixins import Serializable
+from .abc import Snowflake, Timestamp
 from .guild import Member
 
-from attrs import define, field
-from datetime import datetime
+from attrs import define
 
 __all__ = ("Voice", "VoiceState")
 
 
 @define(kw_only=True)
-class VoiceState(Serializable):
+class VoiceState:
     """
     Represents the state of a user's VOIP from Discord.
 
@@ -44,33 +41,31 @@ class VoiceState(Serializable):
         The time at which the user requested to speak, if present.
     """
 
-    guild_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    guild_id: Snowflake = None
     """The guild ID this voice state is for."""
-    channel_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    channel_id: Snowflake = None
     """The channel ID this user is connected to."""
-    user_id: str | Snowflake = field(converter=Snowflake)
+    user_id: Snowflake
     """The user ID this voice state is for."""
-    member: dict | Member | None = field(converter=optional_c(Member), default=None)
+    member: Member = None
     """The guild member this voice state is for."""
-    session_id: str = field()
+    session_id: str
     """The session ID for this voice state."""
-    deaf: bool = field()
+    deaf: bool
     """Whether this user is deafened by the server."""
-    mute: bool = field()
+    mute: bool
     """Whether this user is muted by the server."""
-    self_deaf: bool = field()
+    self_deaf: bool
     """Whether this user is locally deafened."""
-    self_mute: bool = field()
+    self_mute: bool
     """Whether this user is locally muted."""
-    self_stream: bool = field(default=False)
+    self_stream: bool = False
     """Whether this user is streaming using 'Go Live'."""
-    self_video: bool = field()
+    self_video: bool
     """Whether this user's camera is enabled."""
-    suppress: bool = field()
+    suppress: bool
     """Whether this user is muted by the current user."""
-    request_to_speak_timestamp: datetime | str | None = field(
-        converter=optional_c(datetime.fromisoformat), default=None
-    )
+    request_to_speak_timestamp: Timestamp = None
     """The time at which the user requested to speak."""
 
 

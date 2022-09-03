@@ -1,12 +1,8 @@
-from ..mixins import Serializable
-from .abc import Snowflake, Object
+from .abc import Snowflake, Object, Timestamp
 from .user import User
 from .guild import Member
-from ..mixins import Serializable
-from ...utils.converters import optional_c
 
-from attrs import define, field
-from datetime import datetime
+from attrs import define
 from enum import IntEnum
 
 __all__ = (
@@ -86,7 +82,7 @@ class GuildScheduledEventStatus(IntEnum):
 
 
 @define(kw_only=True)
-class GuildScheduledEventEntityMetadata(Serializable):
+class GuildScheduledEventEntityMetadata:
     """
     Represents the additional metadata of guild scheduled events from Discord.
 
@@ -98,12 +94,12 @@ class GuildScheduledEventEntityMetadata(Serializable):
         This is required for events with the `EXTERNAL` entity type.
     """
 
-    location: str | None = field(default=None)
+    location: str = None
     """The location of the event in-between 1-100 characters."""
 
 
 @define(kw_only=True)
-class GuildScheduledEvent(Object, Serializable):
+class GuildScheduledEvent(Object):
     """
     Represents a scheduled event of a guild from Discord.
 
@@ -152,45 +148,37 @@ class GuildScheduledEvent(Object, Serializable):
         The cover image hash of the scheduled event.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID belonging to the scheduled event."""
-    guild_id: str | Snowflake = field(converter=Snowflake)
+    guild_id: Snowflake
     """The ID of the guild the event belongs to."""
-    channel_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    channel_id: Snowflake
     """The ID of the channel the event will be hosted in."""
-    creator_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    creator_id: Snowflake = None
     """The ID of the user who created the event."""
-    name: str = field()
+    name: str
     """The name of the scheduled event (1-100 characters)."""
-    description: str | None = field(default=None)
+    description: str = None
     """The description of the scheduled event (1-1000 characters)."""
-    scheduled_start_time: str | datetime = field(converter=datetime.fromisoformat)
+    scheduled_start_time: Timestamp
     """The time the scheduled event will start."""
-    scheduled_end_time: str | datetime | None = field(
-        converter=optional_c(datetime.fromisoformat), default=None
-    )
+    scheduled_end_time: Timestamp = None
     """The time the scheduled event will end."""
-    privacy_level: int | GuildScheduledEventPrivacyLevel = field(
-        converter=GuildScheduledEventPrivacyLevel
-    )
+    privacy_level: GuildScheduledEventPrivacyLevel
     """The privacy level of the scheduled event."""
-    status: int | GuildScheduledEventStatus = field(converter=GuildScheduledEventStatus)
+    status: GuildScheduledEventStatus
     """The status of the scheduled event."""
-    entity_type: int | GuildScheduledEventEntityType = field(
-        converter=GuildScheduledEventEntityType
-    )
+    entity_type: GuildScheduledEventEntityType
     """The type of the scheduled event."""
-    entity_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
+    entity_id: Snowflake = None
     """The ID of an entity associated with a guild scheduled event."""
-    entity_metadata: dict | GuildScheduledEventEntityMetadata | None = field(
-        converter=optional_c(GuildScheduledEventEntityMetadata._c), default=None
-    )
+    entity_metadata: GuildScheduledEventEntityMetadata = None
     """Additional metadata for the guild scheduled event."""
-    creator: dict | User | None = field(converter=optional_c(User._c), default=None)
+    creator: User = None
     """The user that created the scheduled event."""
-    user_count: int | None = field(default=None)
+    user_count: int = None
     """The number of users subscribed to the scheduled event."""
-    image: str | None = field(default=None)
+    image: str = None
     """The cover image hash of the scheduled event."""
 
 
@@ -208,9 +196,9 @@ class GuildScheduledEventUser:
         Guild member data for this user for the guild which this event belongs to, if any.
     """
 
-    guild_scheduled_event_id: str | Snowflake = field(converter=Snowflake)
+    guild_scheduled_event_id: Snowflake
     """The scheduled event id which the user subscribed to."""
-    user: dict | User = field(converter=User._c)
+    user: User = None
     """The user which subscribed to an event."""
-    member: dict | Member | None = field(converter=optional_c(Member._c), default=None)
+    member: Member = None
     """Guild member data for this user for the guild which this event belongs to, if any."""
