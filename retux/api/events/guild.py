@@ -1,5 +1,6 @@
 from attrs import define
 
+from ...client.resources.role import Role
 from ...client.resources.emoji import Emoji
 from ...client.resources.sticker import Sticker
 from ...client.resources.user import User
@@ -79,7 +80,7 @@ class GuildDelete(UnavailableGuild):
     """
 
 
-@define(kw_only=True, repr=False)
+@define(kw_only=True)
 class GuildBanAdd:
     """
     Represents a `GUILD_BAN_ADD` Gateway event from Discord.
@@ -96,9 +97,6 @@ class GuildBanAdd:
     """The ID of the guild where the ban occurred."""
     user: User
     """The user who was banned from the guild."""
-
-    def __repr__(self) -> Member:
-        return Member.get(self._bot_inst, f"/guilds/{self.guild_id}/members/{self.user.id}")
 
 
 @define(kw_only=True)
@@ -120,7 +118,7 @@ class GuildBanRemove:
     """The user who was unbanned from the guild."""
 
 
-@define(kw_only=True, repr=False)
+@define(kw_only=True)
 class GuildEmojisUpdate:
     """
     Represents a `GUILD_EMOJIS_UPDATE` Gateway event from Discord.
@@ -138,11 +136,8 @@ class GuildEmojisUpdate:
     emojis: list[Emoji]
     """The emojis updated in the guild."""
 
-    def __repr__(self) -> list[Emoji]:
-        return self.emojis
 
-
-@define(kw_only=True, repr=False)
+@define(kw_only=True)
 class GuildStickersUpdate:
     """
     Represents a `GUILD_STICKERS_UPDATE` Gateway event from Discord.
@@ -159,9 +154,6 @@ class GuildStickersUpdate:
     """The ID of the guild where emojis were updated."""
     stickers: list[Sticker]
     """The stickers updated in the guild."""
-
-    def __repr__(self) -> list[Sticker]:
-        return self.stickers
 
 
 @define(kw_only=True)
@@ -299,7 +291,7 @@ class GuildMemberUpdate:
 @define(kw_only=True)
 class GuildMembersChunk:
     """
-    Represents a `GUILD_MEMBERS_CHUNK` Gateway event.
+    Represents a `GUILD_MEMBERS_CHUNK` Gateway event from Discord.
 
     ---
 
@@ -338,3 +330,118 @@ class GuildMembersChunk:
     # presences: list[Presence] = None
     nonce: str = None
     """The nonce of the requested guild."""
+
+
+@define(kw_only=True)
+class GuildRoleAdd:
+    """
+    Represents a `GUILD_ROLE_ADD` Gateway event from Discord.
+
+    Attributes
+    ----------
+    guild_id : `Snowflake`
+        The ID of the guild where the role was added.
+    role : `Role`
+        The role that was added to the guild.
+    """
+
+    guild_id: Snowflake
+    """The ID of the guild where the role was added."""
+    role: Role
+    """The role that was added to the guild."""
+
+
+@define(kw_only=True)
+class GuildRoleUpdate:
+    """
+    Represents a `GUILD_ROLE_UPDATE` Gateway event from Discord.
+
+    Attributes
+    ----------
+    guild_id : `Snowflake`
+        The ID of the guild where the role was updated.
+    role : `Role`
+        The role that was updated in the guild.
+    """
+
+    guild_id: Snowflake
+    """The ID of the guild where the role was added."""
+    role: Role
+    """The role that was added to the guild."""
+
+
+@define(kw_only=True)
+class GuildRoleDelete:
+    """
+    Represents a `GUILD_ROLE_DELETE` Gateway event from Discord.
+
+    Attributes
+    ----------
+    guild_id : `Snowflake`
+        The ID of the guild where the role was deleted.
+    role_id : `Snowflake`
+        The ID of the role that was deleted from the guild.
+    """
+
+    guild_id: Snowflake
+    """The ID of the guild where the role was deleted."""
+    role_id: Snowflake
+    """The ID of the role that was deleted from the guild."""
+
+
+class GuildScheduledEventCreate(GuildScheduledEvent):
+    """Represents a `GUILD_SCHEDULED_EVENT_CREATE` Gateway event from Discord."""
+
+
+class GuildScheduledEventUpdate(GuildScheduledEvent):
+    """Represents a `GUILD_SCHEDULED_EVENT_UPDATE` Gateway event from Discord."""
+
+
+class GuildScheduledEventDelete(GuildScheduledEvent):
+    """Represents a `GUILD_SCHEDULED_EVENT_DELETE` Gateway event from Discord."""
+
+
+@define(kw_only=True)
+class GuildScheduledEventUserAdd:
+    """
+    Represents a `GUILD_SCHEDULED_EVENT_USER_ADD` Gateway event from Discord.
+
+    Attributes
+    ----------
+    guild_scheduled_event_id : `Snowflake`
+        The ID of the guild's scheduled event.
+    user_id : `Snowflake`
+        The ID of the user in the guild scheduled event.
+    guild_id : `Snowflake`
+        The ID of the guild associated to the scheduled event.
+    """
+
+    guild_scheduled_event_id: Snowflake
+    """The ID of the guild's scheduled event."""
+    user_id: Snowflake
+    """The ID of the user in the guild scheduled event."""
+    guild_id: Snowflake
+    """The ID of the guild associated to the scheduled event."""
+
+
+@define(kw_only=True)
+class GuildScheduledEventUserRemove:
+    """
+    Represents a `GUILD_SCHEDULED_EVENT_USER_REMOVE` Gateway event from Discord.
+
+    Attributes
+    ----------
+    guild_scheduled_event_id : `Snowflake`
+        The ID of the guild's scheduled event.
+    user_id : `Snowflake`
+        The ID of the user in the guild scheduled event.
+    guild_id : `Snowflake`
+        The ID of the guild associated to the scheduled event.
+    """
+
+    guild_scheduled_event_id: Snowflake
+    """The ID of the guild's scheduled event."""
+    user_id: Snowflake
+    """The ID of the user in the guild scheduled event."""
+    guild_id: Snowflake
+    """The ID of the guild associated to the scheduled event."""
