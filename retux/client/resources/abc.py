@@ -63,9 +63,9 @@ class Snowflake:
 
     def __eq__(self, other: Union[str, int, "Snowflake"]) -> bool:
         if type(other) == int:
-            return bool(int(self._snowflake) == other)
+            return int(self._snowflake) == other
         else:
-            return bool(self._snowflake == str(other))
+            return self._snowflake == str(other)
 
     @property
     def timestamp(self) -> datetime:
@@ -480,9 +480,9 @@ class Timestamp:
 
     def __eq__(self, other: str | datetime) -> bool:
         if type(other) == str:
-            return bool(str(self._timestamp) == other)
+            return str(self._timestamp) == other
         else:
-            return bool(self._timestamp == other)
+            return self._timestamp == other
 
     def mention(self, style: NotNeeded[str | TimestampStyle] = MISSING) -> str:
         """
@@ -533,10 +533,12 @@ class Object:
     id : `Snowflake`
         The ID associated to the object.
     """
+
     id: str | Snowflake = field(converter=Snowflake)
     """The ID associated to the object."""
-    _bot_inst: NotNeeded["Bot"] = field(default=MISSING)
+    _bot_inst: NotNeeded["Bot"] = field(default=MISSING)  # noqa F821
     """An instance of `Bot` used for helper methods."""
+
 
 @define()
 class Component:

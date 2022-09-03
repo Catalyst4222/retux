@@ -84,7 +84,7 @@ class Webhook(Object, Serializable):
     """The secure token of the webhook, if any. This is returned for `INCOMING` webhooks."""
     application_id: str | Snowflake | None = field(converter=optional_c(Snowflake), default=None)
     """The bot/OAuth2 application that created this webhook, if any."""
-    source_guild: dict | Guild | None = field(converter=optional_c(Guild._c), default=None)
+    source_guild: dict | Guild | None = field(converter=optional_c(Guild), default=None)
     """The guild of the channel that this webhook is following, if any. Returned for `CHANNEL_FOLLOWER` webhooks."""
     source_channel: dict | Channel | None = field(converter=optional_c(Channel._c), default=None)
     """The channel that this webhook is following, if any. Returned for `CHANNEL_FOLLOWER` webhooks."""

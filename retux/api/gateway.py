@@ -438,7 +438,7 @@ class GatewayClient(GatewayProtocol):
                 await self._resume()
             case _GatewayOpCode.DISPATCH:
                 if payload.name not in ["RESUMED", "READY"]:
-                    resource = _EventTable.lookup(payload.name, payload.data)
+                    resource = _EventTable.lookup(payload.name)
                     await self._dispatch(payload.name, resource, **payload.data)
         match payload.name:
             case "RESUMED":
@@ -508,6 +508,11 @@ class GatewayClient(GatewayProtocol):
         """
         logger.debug(f"Dispatching {_name}: {data if isinstance(data, dict) else kwargs}")
 
+        # TODO: move the underlying dispatch logic to the ._track() method.
+        # We probably don't need to segregate the callback designator flow here,
+        # and may prove more beneficial if we handle it directly right next to the
+        # event table lookup call, to avoid O(n) + 1 time complexity.
+
         for bot in self._bots:
             if isinstance(data, (dict, MISSING)):
                 await bot._trigger(_name.lower(), data)
@@ -518,7 +523,7 @@ class GatewayClient(GatewayProtocol):
                     kwargs["bot_inst"] = bot
                 await bot._trigger(
                     _name.lower(),
-                    data._c(kwargs),
+                    data(kwargs),
                 )
 
     async def _identify(self):

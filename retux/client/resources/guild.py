@@ -225,7 +225,7 @@ class UnavailableGuild(Partial, Object, Serializable):
 
 
 @define(kw_only=True)
-class Guild(Object, Serializable):
+class Guild(Object):
     """
     Represents a guild from Discord.
 
