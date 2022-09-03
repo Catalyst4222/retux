@@ -46,9 +46,9 @@ class GuildCreate(Guild):
     """Whether the guild is unavailable or not. Defaults to `False`."""
     member_count: int
     """The total amount of members in the guild."""
-    # TODO: Implement PartialVoiceState object.
-    # voice_states: list[PartialVoiceState]
-    # """The voice states of members in the guild."""
+    # # TODO: Implement PartialVoiceState object.
+    # # voice_states: list[PartialVoiceState]
+    # # """The voice states of members in the guild."""
     members: list[Member]
     """The members of the guild."""
     channels: list[Channel]

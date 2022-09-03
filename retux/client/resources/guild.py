@@ -3,8 +3,6 @@ from typing import Any
 from enum import IntEnum
 from attrs import define
 
-from ..mixins import Controllable
-
 from .user import User, UserFlags, UserPremiumType
 from .emoji import Emoji
 from .sticker import Sticker
@@ -639,7 +637,7 @@ class Member(Partial):
     """
     joined_at: Timestamp
     """The time at which the member joined the guild."""
-    premium_since: Timestamp = None
+    premium_since: Timestamp | None = None
     """The time at which the member began boosting the guild, if present."""
     deaf: bool = False
     """
@@ -663,7 +661,7 @@ class Member(Partial):
     any overwrites. This is only returned when passed inside of an
     `Interaction` object.
     """
-    communication_disabled_until: Timestamp = None
+    communication_disabled_until: Timestamp | None = None
     """
     The time remaining until the member of the guild has their timeout
     removed. This is `None` when a timeout has not yet  been applied,
