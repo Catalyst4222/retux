@@ -21,7 +21,6 @@ from .error import (
     RandomClose,
 )
 from .events.abc import _EventTable
-from .events.connection import HeartbeatAck, InvalidSession, Ready, Reconnect, Resumed
 
 from ..client.flags import Intents
 from ..client.resources.abc import Snowflake
@@ -337,10 +336,11 @@ class GatewayClient(GatewayProtocol):
 
     async def reconnect(self):
         """Reconnects to the Gateway and re-initiates a WebSocket state."""
-        self._closed = True
         self._heartbeat_ack = False
 
         if self._closed:
+            if self._conn is not None:
+                await self._conn.aclose()
             await self.connect()
         else:
             logger.info("Told to reconnect, but did not need to.")
@@ -389,69 +389,51 @@ class GatewayClient(GatewayProtocol):
         payload : `_GatewayPayload`
             The payload being sent from the Gateway.
         """
-        logger.debug(
-            f"Tracking payload: {payload.opcode}/{_GatewayOpCode(payload.opcode).name}."
-            f"{'' if payload.name is None else f' ({payload.name})'}"
-        )
+        logger.debug(f"Tracking {_GatewayOpCode(payload.opcode).name}.")
 
         match _GatewayOpCode(payload.opcode):
             case _GatewayOpCode.HELLO:
                 if self._meta.session_id:
-                    logger.info("Prior connection found, trying to resume.")
                     await self._resume()
                 else:
-                    logger.debug("New connection found, identifying to the Gateway.")
                     await self._identify()
                     self._meta.heartbeat_interval = payload.data["heartbeat_interval"] / 1000
-                    logger.debug(f"Heartbeat set to {self._meta.heartbeat_interval}ms.")
+                    logger.debug(f"❤ -> {self._meta.heartbeat_interval}ms.")
                     self._heartbeat_ack = True
-                    logger.debug("Began the heartbeat process.")
             case _GatewayOpCode.HEARTBEAT_ACK:
                 self._last_ack[1] = perf_counter()
-                logger.debug(f"The heartbeat was acknowledged. (took {self.latency}ms.)")
-                await self._dispatch("HEARTBEAT_ACK", HeartbeatAck, latency=self.latency)
+                logger.debug(f"❤️ ({self.latency}ms.)")
                 self._last_ack[0] = perf_counter()
             case _GatewayOpCode.INVALID_SESSION:
-                logger.info(
-                    "Our Gateway connection has suddenly invalidated. Checking reconnection status."
-                )
-                await self._dispatch("INVALID_SESSION", InvalidSession, payload.data)
+                logger.info("Our Gateway connection has suddenly invalidated.")
 
                 if bool(payload.data):
-                    logger.warning(
-                        "The Gateway has told us to reconnect. Resuming last known connection."
-                    )
+                    self._heartbeat_ack = False
                     await self._resume()
                 else:
-                    logger.error(
-                        "The given connection cannot be reconnected to. Starting new connection."
-                    )
                     self._meta.session_id = None
                     await self._conn.aclose()
                     await self.reconnect()
             case _GatewayOpCode.RECONNECT:
-                logger.warning(
-                    "The Gateway has told us to reconnect. Resuming last known connection."
-                )
-                await self._dispatch("RECONNECT", Reconnect)
+                self._heartbeat_ack = False
                 await self._resume()
             case _GatewayOpCode.DISPATCH:
                 if payload.name not in ["RESUMED", "READY"]:
                     resource = _EventTable.lookup(payload.name)
                     await self._dispatch(payload.name, resource, **payload.data)
+                    await self._dispatch("RAW_RECEIVE", payload.data)
         match payload.name:
             case "RESUMED":
                 logger.info(
-                    f"The connection was resumed. (session: {self._meta.session_id}, sequence: {self._meta.seq}"
+                    f"Resumed connection. (session: {self._meta.session_id}, sequence: {self._meta.seq})"
                 )
-                await self._dispatch("RESUMED", Resumed, **payload.data)
+                self._heartbeat_ack = True
             case "READY":
                 self._meta.session_id = payload.data["session_id"]
                 self._meta.seq = payload.sequence
                 logger.info(
-                    f"The Gateway has declared a ready connection. (session: {self._meta.session_id}, sequence: {self._meta.seq})"
+                    f"Connection is now ready. (session: {self._meta.session_id}, sequence: {self._meta.seq})"
                 )
-                await self._dispatch("READY", Ready, **payload.data)
 
     async def _hook(self, bot: "Bot") -> object:  # noqa
         """
@@ -473,7 +455,6 @@ class GatewayClient(GatewayProtocol):
             can be any bot instance for interchangeable
             handling of 1 main Gateway.
         """
-        logger.debug("Hooking the bot into the Gateway.")
         self._bots.append(bot)
 
     async def _dispatch(
@@ -505,7 +486,7 @@ class GatewayClient(GatewayProtocol):
             If a resource was not able to be found for
             the event called for, `MISSING` will be given.
         """
-        logger.debug(f"Dispatching {_name}: {data if isinstance(data, dict) else kwargs}")
+        logger.debug(f"{_name}: {data if isinstance(data, dict) else kwargs}")
 
         # TODO: move the underlying dispatch logic to the ._track() method.
         # We probably don't need to segregate the callback designator flow here,
@@ -535,7 +516,7 @@ class GatewayClient(GatewayProtocol):
                 "properties": {"os": platform, "browser": "retux", "device": "retux"},
             },
         )
-        logger.debug("Sending an identification payload to the Gateway.")
+        logger.debug("Sending identification.")
         await self._send(payload)
 
     async def _resume(self):
@@ -548,18 +529,17 @@ class GatewayClient(GatewayProtocol):
                 "seq": self._meta.seq,
             },
         )
-        logger.debug("Sending a resuming payload to the Gateway.")
+        logger.debug("Resuming connection call.")
         await self._send(payload)
 
     async def _heartbeat(self):
         """Sends a heartbeat payload to the Gateway."""
         payload = _GatewayPayload(op=_GatewayOpCode.HEARTBEAT.value, d=self._meta.seq)
 
-        logger.debug("Waiting the appropriate time for probable connection.")
         await sleep(random())
 
         while self._heartbeat_ack:
-            logger.debug("Sending a heartbeat payload to the Gateway.")
+            logger.debug("❤")
             await self._send(payload)
             await sleep(self._meta.heartbeat_interval)
 
@@ -616,7 +596,7 @@ class GatewayClient(GatewayProtocol):
         if nonce is not MISSING:
             payload.data["nonce"] = nonce
 
-        logger.debug("Sending a payload requesting for guild members to the Gateway.")
+        logger.debug("Requesting for guild members.")
         await self._send(payload)
 
     async def update_voice_state(
@@ -653,7 +633,7 @@ class GatewayClient(GatewayProtocol):
                 "self_deaf": False if self_deaf is MISSING else self_deaf,
             },
         )
-        logger.debug("Sending a payload requesting a voice state update to the Gateway.")
+        logger.debug("Requesting for a voice state update.")
         await self._send(payload)
 
     async def update_presence(
@@ -686,7 +666,7 @@ class GatewayClient(GatewayProtocol):
                 "afk": False if afk is MISSING and status != "idle" else afk,
             },
         )
-        logger.debug("Sending a payload requesting a presence update to the Gateway.")
+        logger.debug("Requesting for a presence update.")
         await self._send(payload)
 
     @property
@@ -695,5 +675,4 @@ class GatewayClient(GatewayProtocol):
         The calculated difference between the last known set
         of acknowledgements for a Gateway event.
         """
-        logger.debug("Determining the latency call.")
         return self._last_ack[1] - self._last_ack[0]

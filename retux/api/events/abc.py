@@ -8,6 +8,7 @@ from .channel import (
     ThreadUpdate,
     ThreadCreate,
 )
+from .connection import HeartbeatAck, Ready, InvalidSession, Reconnect, Resumed
 from .misc import TypingStart
 from .guild import (
     GuildCreate,
@@ -37,6 +38,14 @@ class _EventTable:
     """
     Stores events from the Gateway for potential use dispatching.
     """
+
+    connection: dict[str, type] = {
+        "READY": Ready,
+        "HEARTBEAT_ACK": HeartbeatAck,
+        "INVALID_SESSION": InvalidSession,
+        "RECONNECT": Reconnect,
+        "RESUMED": Resumed,
+    }
 
     guild: dict[str, type] = {
         "GUILD_CREATE": GuildCreate,

@@ -92,19 +92,9 @@ class Ready:
         return self.v
 
 
-@define
+@define()
 class HeartbeatAck:
-    """
-    Represents when the client's Gateway connection has validated a heartbeat.
-
-    Attributes
-    ----------
-    latency : `float`
-        The latency or difference in milliseconds between heartbeats.
-    """
-
-    latency: float
-    """The latency or difference in milliseconds between heartbeats."""
+    """Represents when the client's Gateway connection has validated a heartbeat."""
 
 
 @define(kw_only=True)
@@ -144,7 +134,7 @@ class Reconnect:
     """
 
 
-@define(repr=False)
+@define(kw_only=True, repr=False)
 class InvalidSession:
     """
     Represents when the client has an invalidated Gateway connection.
@@ -156,47 +146,7 @@ class InvalidSession:
     - The Gateway could not resume the connection.
     - The client could not identify itself correctly.
     - The Gateway has invalidated the session for you, and requires a new connection.
-
-    ---
-
-    Attributes
-    ----------
-    _invalid_session : `bool`
-        Whether the session can be reconnected to or not.
-        This should never need to be called upon directly.
-        Please use the representation of the class itself.
-
-        This defaults to `False` and determined on good faith
-        of ensuring a stable connection over potential client
-        conflict.
-
-    Methods
-    -------
-    can_reconnect() : `bool`
-        Checks the session to see if a reconnection is possible.
     """
 
-    _invalid_session: bool = False
-    """
-    Whether the session can be reconnected to or not.
-    This should never need to be called upon directly.
-    Please use the representation of the class itself.
-
-    This defaults to `False` and determined on good faith
-    of ensuring a stable connection over potential client
-    conflict.
-    """
-
-    def __repr__(self) -> bool:
-        return self._invalid_session
-
-    def can_reconnect(self) -> bool:
-        """
-        Checks the session to see if a reconnection is possible.
-
-        Returns
-        -------
-        `bool`
-            Whether the session can be reconnected to or not.
-        """
-        return self._invalid_session
+    d: bool = False
+    """Whether the session can be reconnected to or not."""

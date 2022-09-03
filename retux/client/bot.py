@@ -10,6 +10,7 @@ from .flags import Intents
 from ..utils.hooks import cattrs_structure_hooks
 
 logger = getLogger(__name__)
+logger.warning("retux is in alpha. If you come across a bug, please file a GitHub Issue.")
 
 
 class BotProtocol(Protocol):
