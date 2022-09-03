@@ -533,6 +533,7 @@ class Object:
     id : `Snowflake`
         The ID associated to the object.
     """
+
     id: str | Snowflake = field(converter=Snowflake)
     """The ID associated to the object."""
     _bot_inst: NotNeeded["Bot"] = field(default=MISSING)  # noqa F821
