@@ -123,7 +123,7 @@ class Bot(BotProtocol):
         """
         _name = (name if event else name) if name else coro.__name__
 
-        logger.debug(f"Registering callback for {_name}.")
+        logger.debug(f"Registering {_name}.")
         call = self._calls.get(_name, [])
         call.append(coro)
 

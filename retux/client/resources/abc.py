@@ -475,8 +475,8 @@ class Timestamp:
     reference. Please use the representation of the class instead.
     """
 
-    def __repr__(self) -> datetime:
-        return self._timestamp
+    def __repr__(self) -> str:
+        return str(self._timestamp)
 
     def __eq__(self, other: str | datetime) -> bool:
         if type(other) == str:
@@ -534,9 +534,9 @@ class Object:
         The ID associated to the object.
     """
 
-    id: str | Snowflake = field(converter=Snowflake)
+    id: Snowflake
     """The ID associated to the object."""
-    _bot_inst: NotNeeded["Bot"] = field(default=MISSING)  # noqa F821
+    _bot_inst: NotNeeded["Bot"] = MISSING  # noqa F821
     """An instance of `Bot` used for helper methods."""
 
 

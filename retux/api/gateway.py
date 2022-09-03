@@ -351,6 +351,11 @@ class GatewayClient(GatewayProtocol):
         await self._conn.aclose()
 
         match code:
+            case 1011:
+                # 1011 closing codes typically occur when the Gateway commits suicide to the
+                # client connection. There is nothing wrong with the client, it's just Discord
+                # being Discord.
+                await self.reconnect()
             case 4004:
                 raise InvalidToken(
                     "Your bots token is invalid. (Make sure there's a value, or reset if needed.)"
@@ -378,7 +383,7 @@ class GatewayClient(GatewayProtocol):
                     "You provided an intent that your bot is not approved for. Make sure your bot is verified and/or has it enabled in the Developer Portal."
                 )
             case _:
-                raise RandomClose(f"The Gateway has randomly closed. (WS code {code})")
+                raise RandomClose(f"The Gateway randomly closed. (code {code})")
 
     async def _track(self, payload: _GatewayPayload):
         """
