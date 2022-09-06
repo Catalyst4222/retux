@@ -26,7 +26,9 @@ class BotProtocol(Protocol):
     async def restart(self):
         ...
 
-    async def on(self, coro: Coroutine, name: NotNeeded[str] = MISSING) -> Callable[..., Any]:
+    async def on(
+        self, coro: NotNeeded[Coroutine] = MISSING, *, name: NotNeeded[str] = MISSING
+    ) -> Callable[..., Any]:
         ...
 
     @property
