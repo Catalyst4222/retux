@@ -32,6 +32,7 @@ from .guild import (
     GuildScheduledEventUserAdd,
     GuildScheduledEventUserRemove,
 )
+from ...const import MISSING
 
 
 class _EventTable:
@@ -46,7 +47,7 @@ class _EventTable:
         "RECONNECT": Reconnect,
         "RESUMED": Resumed,
     }
-
+    misc: dict[str, type] = {"TYPING_START": TypingStart}
     guild: dict[str, type] = {
         "GUILD_CREATE": GuildCreate,
         "GUILD_UPDATE": GuildUpdate,
@@ -82,9 +83,13 @@ class _EventTable:
 
     @classmethod
     def lookup(cls, name: str) -> type:
-        if cls.guild.get(name):
+        if cls.connection.get(name):
+            return cls.connection[name]
+        elif cls.misc.get(name):
+            return cls.misc[name]
+        elif cls.guild.get(name):
             return cls.guild[name]
-        if cls.channel.get(name):
+        elif cls.channel.get(name):
             return cls.channel[name]
-        if name == "TYPING_START":
-            return TypingStart
+        else:
+            return MISSING
