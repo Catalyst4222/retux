@@ -20,7 +20,7 @@ from .error import (
     DisallowedIntents,
     RandomClose,
 )
-from .events.abc import _EventTable
+from .events.abc import EventType
 
 from ..client.flags import Intents
 from ..client.resources.abc import Snowflake
@@ -41,6 +41,8 @@ class _GatewayMeta:
     """The compression type on Gateway payloads."""
     heartbeat_interval: float | None = field(default=None)
     """The heartbeat used to keep a Gateway connection alive."""
+    resume_gateway_url: str | None = field(default=None)
+    """The URL for resuming Gateway connections."""
     session_id: str | None = field(default=None)
     """The ID of an existent session, used for when resuming a lost connection."""
     seq: int | None = field(default=None)
@@ -91,11 +93,11 @@ class _GatewayPayload:
 
     op: int | _GatewayOpCode = field(converter=int)
     """The opcode of the payload."""
-    d: Any | None = field(default=None)
+    d: Any | None = None
     """The payload's event data."""
-    s: int | None = field(default=None)
+    s: int | None = None
     """The sequence number, used for resuming sessions and heartbeats."""
-    t: str | None = field(default=None)
+    t: str | None = None
     """The name of the payload's event."""
 
     @property
@@ -318,13 +320,14 @@ class GatewayClient(GatewayProtocol):
         # may modify their GatewayClient to their liking.
 
         async with open_websocket_url(
-            f"{__gateway_url__}?v={self._meta.version}&encoding={self._meta.encoding}"
+            f"{self._meta.resume_gateway_url or __gateway_url__}?v={self._meta.version}&encoding={self._meta.encoding}"
             f"{'' if self._meta.compress is None else f'&compress={self._meta.compress}'}"
         ) as self._conn:
             self._closed = bool(self._conn.closed)
 
             if self._stopped:
                 await self._conn.aclose()
+                await self.__aexit__(*self._conn.closed)
             if self._closed:
                 await self._error()
 
@@ -337,24 +340,39 @@ class GatewayClient(GatewayProtocol):
     async def reconnect(self):
         """Reconnects to the Gateway and re-initiates a WebSocket state."""
         self._heartbeat_ack = False
+        self._closed = True
 
-        if self._closed:
-            if self._conn is not None:
-                await self._conn.aclose()
-            await self.connect()
-        else:
-            logger.info("Told to reconnect, but did not need to.")
+        if self._conn is not None:
+            await self._conn.aclose()
+
+        await self.connect()
 
     async def _error(self):
         """Handles error responses from closing codes."""
         code = self._conn.closed.code
+        reason = self._conn.closed.reason
         await self._conn.aclose()
 
         match code:
+            case 1000:
+                # This is a normal closure. We should never try reconnecting it, but random edge cases
+                # happen when our connection is terminated with this but a RECONNECT/RESUME event is missing.
+                if not self._stopped:
+                    await self.reconnect()
+            case 1006:
+                # 1006 closing codes occur when the server mishandled data or commit a malformed action.
+                logger.warning("Closing ABNORMAL state.")
+                await self.reconnect()
             case 1011:
                 # 1011 closing codes typically occur when the Gateway commits suicide to the
                 # client connection. There is nothing wrong with the client, it's just Discord
                 # being Discord.
+                logger.error("Gateway has committed suicide.")
+                await self.reconnect()
+            case 4000:
+                logger.exception(
+                    RandomClose, "Something went wrong with the Gateway. We'll reconnect."
+                )
                 await self.reconnect()
             case 4004:
                 raise InvalidToken(
@@ -383,7 +401,7 @@ class GatewayClient(GatewayProtocol):
                     "You provided an intent that your bot is not approved for. Make sure your bot is verified and/or has it enabled in the Developer Portal."
                 )
             case _:
-                raise RandomClose(f"The Gateway randomly closed. (code {code})")
+                raise RandomClose(f"The Gateway randomly closed. {reason}#{code}")
 
     async def _track(self, payload: _GatewayPayload):
         """
@@ -395,10 +413,13 @@ class GatewayClient(GatewayProtocol):
             The payload being sent from the Gateway.
         """
         logger.debug(f"Tracking {_GatewayOpCode(payload.opcode).name}.")
+        # Discord recommends to always use the last given sequence for reconnects.
+        # This helps with resending payloads that were lost on a disconnect.
+        self._meta.seq = payload.sequence
 
         match _GatewayOpCode(payload.opcode):
             case _GatewayOpCode.HELLO:
-                if self._meta.session_id:
+                if self._meta.session_id and self._meta.resume_gateway_url:
                     await self._resume()
                 else:
                     await self._identify()
@@ -424,9 +445,13 @@ class GatewayClient(GatewayProtocol):
                 await self._resume()
             case _GatewayOpCode.DISPATCH:
                 if payload.name not in ["RESUMED", "READY"]:
-                    resource = _EventTable.lookup(payload.name)
-                    await self._dispatch(payload.name, resource, **payload.data)
-                    await self._dispatch("RAW_RECEIVE", payload.data)
+                    resource = EventType.__dict__.get(payload.name, MISSING)
+                    if resource is not MISSING:
+                        await self._dispatch(payload.name, resource.value, **payload.data)
+                    await self._dispatch(
+                        "RAW_RECEIVE",
+                        {**payload.data, "_event_type": resource, "_event_name": payload.name},
+                    )
         match payload.name:
             case "RESUMED":
                 logger.info(
@@ -436,6 +461,7 @@ class GatewayClient(GatewayProtocol):
             case "READY":
                 self._meta.session_id = payload.data["session_id"]
                 self._meta.seq = payload.sequence
+                self._meta.resume_gateway_url = payload.data["resume_gateway_url"]
                 logger.info(
                     f"Connection is now ready. (session: {self._meta.session_id}, sequence: {self._meta.seq})"
                 )
@@ -487,9 +513,6 @@ class GatewayClient(GatewayProtocol):
             The name of the event.
         data : `dict`, `Serializable`, `MISSING`
             The supplied payload data from the event.
-
-            If a resource was not able to be found for
-            the event called for, `MISSING` will be given.
         """
         logger.debug(f"{_name}: {data if isinstance(data, dict) else kwargs}")
 
@@ -505,7 +528,7 @@ class GatewayClient(GatewayProtocol):
                 await bot._trigger(_name.lower(), kwargs)
             else:
                 if kwargs.get("id"):
-                    kwargs["bot_inst"] = bot
+                    kwargs["bot_inst"] = bot.__class__
                 await bot._trigger(
                     _name.lower(),
                     structure(kwargs, data),

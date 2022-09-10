@@ -333,14 +333,14 @@ class GuildMembersChunk:
 
 
 @define(kw_only=True)
-class GuildRoleAdd:
+class GuildRoleCreate:
     """
-    Represents a `GUILD_ROLE_ADD` Gateway event from Discord.
+    Represents a `GUILD_ROLE_CREATE` Gateway event from Discord.
 
     Attributes
     ----------
     guild_id : `Snowflake`
-        The ID of the guild where the role was added.
+        The ID of the guild where the role was created.
     role : `Role`
         The role that was added to the guild.
     """

@@ -1,15 +1,14 @@
 """
 retux
-An API wrapper built with good intentions.
+A Discord API wrapper built with good intentions.
 
 ---
 
 This project is open-sourced! If you'd like to make a
 contribution, feel free to make a pull request.
 
-- GitHub repository: https://github.com/ffl0w/retux
-- Documentation: https://retux.rtfd.io (or see `/examples`!)
+https://github.com/i0bs/retux
 """
 from .client import *  # noqa
 from .api.http import *  # noqa
-from .api.events import *  # noqa
+from .api import events  # noqa
