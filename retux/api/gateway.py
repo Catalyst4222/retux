@@ -349,8 +349,8 @@ class GatewayClient(GatewayProtocol):
 
     async def _error(self):
         """Handles error responses from closing codes."""
-        code = self._conn.closed.code
-        reason = self._conn.closed.reason
+        code = self._conn.closed.code if self._conn.closed is not None else 4999
+        reason = self._conn.closed.reason if self._conn.closed is not None else "N/A"
         await self._conn.aclose()
 
         match code:
@@ -400,6 +400,11 @@ class GatewayClient(GatewayProtocol):
                 raise DisallowedIntents(
                     "You provided an intent that your bot is not approved for. Make sure your bot is verified and/or has it enabled in the Developer Portal."
                 )
+            case 4999:
+                logger.exception(
+                    RandomClose, "The Gateway client declared a closure. We'll reconnect."
+                )
+                await self.reconnect()
             case _:
                 raise RandomClose(f"The Gateway randomly closed. {reason}#{code}")
 
