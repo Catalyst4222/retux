@@ -1,8 +1,12 @@
-from ..api.http import _Route, _RouteMethod
-
 from attrs import asdict
 
-__all__ = ("Respondable", "Controllable", "Editable")
+from ...api.http import _Route, _RouteMethod
+
+__all__ = (
+    "Respondable",
+    "Controllable",
+    "Editable",
+)
 
 
 class Editable:
@@ -43,7 +47,8 @@ class Editable:
         for key, value in kwargs.items():
             if hasattr(value, "__slots__"):
                 payload[key] = asdict(
-                    value, filter=lambda _name, _value: _name.name not in {"_bot", "bot"}
+                    value,
+                    filter=lambda _name, _value: _name.name not in {"_bot", "bot"},
                 )
             else:
                 payload[key] = value
@@ -111,7 +116,8 @@ class Respondable(Editable):
         for key, value in kwargs.items():
             if hasattr(value, "__slots__"):
                 payload[key] = asdict(
-                    value, filter=lambda _name, _value: _name.name not in {"_bot", "bot"}
+                    value,
+                    filter=lambda _name, _value: _name.name not in {"_bot", "bot"},
                 )
             else:
                 payload[key] = value
@@ -160,7 +166,8 @@ class Controllable:
         for key, value in kwargs.items():
             if hasattr(value, "__slots__"):
                 payload[key] = asdict(
-                    value, filter=lambda _name, _value: _name.name not in {"_bot", "bot"}
+                    value,
+                    filter=lambda _name, _value: _name.name not in {"_bot", "bot"},
                 )
             else:
                 payload[key] = value

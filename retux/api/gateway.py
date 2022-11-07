@@ -23,7 +23,7 @@ from .error import (
 from .events.abc import EventType
 
 from ..client.flags import Intents
-from ..client.resources.abc import Snowflake
+from ..client.resources.misc import Snowflake
 from ..const import MISSING, NotNeeded, __gateway_url__
 
 logger = getLogger(__name__)
@@ -257,13 +257,13 @@ class GatewayClient(GatewayProtocol):
 
     async def __aenter__(self):
         self._tasks = open_nursery()
-        nursery = await self._tasks.__aenter__()
+        nursery = await self._tasks.__aenter__()  # noqa
         nursery.start_soon(self.reconnect)
         nursery.start_soon(self._heartbeat)
         return self
 
     async def __aexit__(self, *exc):
-        return await self._tasks.__aexit__(*exc)
+        return await self._tasks.__aexit__(*exc)  # noqa
 
     async def _receive(self) -> _GatewayPayload:
         """

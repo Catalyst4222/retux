@@ -3,6 +3,7 @@ from .app_commands import *  # noqa
 from .components import *  # noqa
 from .user import *  # noqa
 from .misc import *  # noqa
+from .mixins import *  # noqa
 from .role import *  # noqa
 from .channel import *  # noqa
 from .webhook import *  # noqa
