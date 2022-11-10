@@ -20,7 +20,7 @@ from .error import (
     DisallowedIntents,
     RandomClose,
 )
-from .events.abc import EventType
+from .events.lookup import EventType
 
 from ..client.flags import Intents
 from ..client.resources.misc import Snowflake
