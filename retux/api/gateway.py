@@ -428,6 +428,8 @@ class GatewayClient:
                     resource = EventType.__dict__.get(payload.name, MISSING)
                     if resource is not MISSING:
                         await self._dispatch(payload.name, resource.value, **payload.data)
+                    else:
+                        await self._dispatch(payload.name, payload.data)
                     await self._dispatch(
                         "RAW_RECEIVE",
                         {**payload.data, "_event_type": resource, "_event_name": payload.name},
@@ -439,7 +441,6 @@ class GatewayClient:
                 )
                 self._heartbeat_ack = True
             case "READY":
-                print(payload.data)
                 self._meta.session_id = payload.data["session_id"]
                 self._meta.seq = payload.sequence
                 self._meta.resume_gateway_url = payload.data["resume_gateway_url"]
