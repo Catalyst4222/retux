@@ -2,7 +2,7 @@ from attrs import define
 from enum import IntFlag
 
 
-from .abc import Object, Partial, Snowflake
+from .misc import Object, Partial, Snowflake
 from .user import User
 
 __all__ = ("PartialApplication", "Application", "ApplicationFlags", "InstallParams")

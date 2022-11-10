@@ -1,4 +1,4 @@
-from .abc import Timestamp
+from .misc import Timestamp
 from .user import User
 from .guild import Guild, Member
 from .channel import Channel

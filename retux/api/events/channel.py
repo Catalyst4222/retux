@@ -1,6 +1,6 @@
 from attrs import define
 
-from ...client.resources.abc import Snowflake, Timestamp
+from ...client.resources.misc import Snowflake, Timestamp
 from ...client.resources.channel import Channel, ThreadChannel, ThreadMember
 
 

@@ -1,4 +1,4 @@
-from .abc import Snowflake, Object
+from .misc import Snowflake, Object
 
 from attrs import define
 

@@ -4,7 +4,7 @@ from logging import getLogger
 from random import random
 from sys import platform
 from time import perf_counter
-from typing import Any, Protocol
+from typing import Any
 
 from attrs import asdict, define, field
 from cattrs import structure
@@ -121,51 +121,7 @@ class _GatewayPayload:
         return self.t
 
 
-class GatewayProtocol(Protocol):
-    def __init__(
-        self,
-        token: str,
-        intents: Intents,
-        *,
-        version: int = 10,
-        encoding: str = "json",
-        compress: NotNeeded[str] = MISSING,
-    ):
-        ...
-
-    async def connect(self):
-        ...
-
-    async def reconnect(self):
-        ...
-
-    async def request_guild_members(
-        self,
-        guild_id: Snowflake,
-        *,
-        query: NotNeeded[str] = MISSING,
-        limit: NotNeeded[int] = MISSING,
-        presences: NotNeeded[bool] = MISSING,
-        user_ids: NotNeeded[Snowflake | list[Snowflake]] = MISSING,
-        nonce: NotNeeded[str] = MISSING,
-    ):
-        ...
-
-    async def update_voice_state(
-        self,
-        guild_id: Snowflake,
-        channel_id: NotNeeded[Snowflake] = MISSING,
-        self_mute: NotNeeded[bool] = MISSING,
-        self_deaf: NotNeeded[bool] = MISSING,
-    ):
-        ...
-
-    @property
-    def latency(self) -> float:
-        ...
-
-
-class GatewayClient(GatewayProtocol):
+class GatewayClient:
     """
     Represents a connection to Discord's Gateway. Gateways are Discord's
     form of real-time communication over secure WebSockets. Clients will
@@ -204,26 +160,37 @@ class GatewayClient(GatewayProtocol):
 
     # TODO: Add sharding and presence changing.
 
-    __slots__ = ("token", "intents", "_meta")
+    __slots__ = (
+        "token",
+        "intents",
+        "_meta",
+        "_tasks",
+        "_closed",
+        "_stopped",
+        "_heartbeat_ack",
+        "_last_ack",
+        "_bots",
+        "_conn",
+    )
     token: str
     """The bots token."""
     intents: Intents
     """The intents to connect with."""
-    _conn: WebSocketConnection = None
-    """An instance of a connection to the Gateway."""
     _meta: _GatewayMeta
     """Metadata representing connection parameters for the Gateway."""
-    _tasks: Nursery = None
+    _conn: WebSocketConnection | None
+    """An instance of a connection to the Gateway."""
+    _tasks: Nursery | None
     """The tasks associated with the Gateway, for reconnection and heart-beating."""
-    _closed: bool = True
+    _closed: bool
     """Whether the Gateway connection is closed or not."""
-    _stopped: bool = False
+    _stopped: bool
     """Whether the Gateway connection was forcefully stopped or not."""
-    _heartbeat_ack: bool = False
+    _heartbeat_ack: bool
     """Whether we've received the first heartbeat acknowledgement or not."""
-    _last_ack: list[float] = []
+    _last_ack: list[float]
     """The before/after time of the last Gateway event tracked. See `latency` for Gateway connection timing."""
-    _bots: list["Bot"] = []  # noqa
+    _bots: list["Bot"]  # noqa
     """The bot instances used for dispatching events."""
 
     def __init__(
@@ -254,6 +221,14 @@ class GatewayClient(GatewayProtocol):
         self.token = token
         self.intents = intents
         self._meta = _GatewayMeta(version=version, encoding=encoding, compress=compress)
+
+        self._conn = None
+        self._tasks = None
+        self._closed = True
+        self._stopped = False
+        self._heartbeat_ack = False
+        self._last_ack = []
+        self._bots = []
 
     async def __aenter__(self):
         self._tasks = open_nursery()
@@ -464,6 +439,7 @@ class GatewayClient(GatewayProtocol):
                 )
                 self._heartbeat_ack = True
             case "READY":
+                print(payload.data)
                 self._meta.session_id = payload.data["session_id"]
                 self._meta.seq = payload.sequence
                 self._meta.resume_gateway_url = payload.data["resume_gateway_url"]

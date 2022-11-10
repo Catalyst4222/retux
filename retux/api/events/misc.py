@@ -1,7 +1,7 @@
 from datetime import datetime
 from attrs import define, field
 
-from ...client.resources.abc import Snowflake
+from ...client.resources.misc import Snowflake
 from ...client.resources.guild import Member
 
 

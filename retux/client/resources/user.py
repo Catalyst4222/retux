@@ -1,7 +1,7 @@
 from enum import IntEnum, IntFlag
 from attrs import define
 
-from .abc import Snowflake, Object
+from .misc import Snowflake, Object
 
 __all__ = ("User", "UserFlags", "UserPremiumType")
 

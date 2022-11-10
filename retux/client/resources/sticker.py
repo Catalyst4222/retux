@@ -1,7 +1,7 @@
 from enum import IntEnum
 from attrs import define
 
-from .abc import Object, Snowflake
+from .misc import Object, Snowflake
 from .user import User
 
 

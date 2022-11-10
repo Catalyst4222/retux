@@ -97,21 +97,6 @@ class ImageData:
         return self.file.split(".")[-1]
 
 
-@define()
-class Component:
-    """
-    Represents the base information of a component from Discord.
-
-    ---
-
-    `custom_id` is an attribute shared in every component,
-    however, only `Button` makes them optional. A custom ID is
-    a developer-defined ID in-between 1-100 characters.
-    """
-
-    custom_id: str = None
-
-
 @define(repr=False, eq=False)
 class Snowflake:
     """
@@ -579,9 +564,6 @@ class Timestamp:
     reference. Please use the representation of the class instead.
     """
 
-    def __repr__(self) -> datetime:
-        return self._timestamp
-
     def __eq__(self, other: str | datetime) -> bool:
         if type(other) == str:
             return str(self._timestamp) == other
@@ -640,5 +622,20 @@ class Object:
 
     id: Snowflake
     """The ID associated to the object."""
-    _bot_inst: object = MISSING
+    _bot_inst: NotNeeded["Bot"] = MISSING  # noqa F821
     """An instance of `Bot` used for helper methods."""
+
+
+@define()
+class Component:
+    """
+    Represents the base information of a component from Discord.
+
+    ---
+
+    `custom_id` is an attribute shared in every component,
+    however, only `Button` makes them optional. A custom ID is
+    a developer-defined ID in-between 1-100 characters.
+    """
+
+    custom_id: str = None

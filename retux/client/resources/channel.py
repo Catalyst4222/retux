@@ -11,6 +11,16 @@ from .role import Role
 
 __all__ = (
     "Channel",
+    "TextChannel",
+    "GuildChannel",
+    "GuildText",
+    "AnnouncementChannel",
+    "ForumChannel",
+    "DMChannel",
+    "ThreadChannel",
+    "GuildVoice",
+    "VoiceChannel",
+    "StageChannel",
     "FollowedChannel",
     "MessageActivity",
     "ChannelType",

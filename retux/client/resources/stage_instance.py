@@ -1,4 +1,4 @@
-from .abc import Snowflake
+from .misc import Snowflake
 
 from attrs import define
 from enum import IntEnum

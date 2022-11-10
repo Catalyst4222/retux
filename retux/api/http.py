@@ -2,7 +2,6 @@ from enum import Enum
 from json import dumps, loads
 from logging import INFO, getLogger
 from sys import version_info
-from typing import Protocol
 
 from attrs import define, field
 from httpx import AsyncClient, QueryParams, Response, __version__ as __http_version__
@@ -97,15 +96,7 @@ class _Limit:
     """The time remaining before the event may be reset. Defaults to `0.0`."""
 
 
-class HTTPProtocol(Protocol):
-    def __init__(self, token: str):
-        ...
-
-    async def request(self, route: _Route, payload: dict, retries: NotNeeded[int] = MISSING):
-        ...
-
-
-class HTTPClient(HTTPProtocol):
+class HTTPClient:
     """
     Represents a connection to Discord's REST API. The most common use case
     of the Discord API will be providing a service, or access to a platform

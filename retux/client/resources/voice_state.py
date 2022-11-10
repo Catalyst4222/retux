@@ -1,4 +1,4 @@
-from .abc import Snowflake, Timestamp
+from .misc import Snowflake, Timestamp
 from .guild import Member
 
 from attrs import define

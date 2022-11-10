@@ -1,4 +1,4 @@
-from .abc import Snowflake, Object
+from .misc import Snowflake, Object
 from .user import User
 from .guild import Guild
 from .channel import Channel

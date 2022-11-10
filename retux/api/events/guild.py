@@ -5,7 +5,7 @@ from ...client.resources.emoji import Emoji
 from ...client.resources.sticker import Sticker
 from ...client.resources.user import User
 from ...client.resources.guild_scheduled_event import GuildScheduledEvent
-from ...client.resources.abc import Timestamp, Snowflake, Image, CDNEndpoint
+from ...client.resources.misc import Timestamp, Snowflake, Image, CDNEndpoint
 from ...client.resources.channel import Channel, ThreadChannel
 from ...client.resources.guild import Guild, Member, UnavailableGuild
 from ...client.resources.stage_instance import StageInstance

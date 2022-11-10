@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Callable, Coroutine, Optional, Protocol
+from typing import Any, Callable, Coroutine, Optional
 
 from trio import run
 
@@ -13,34 +13,7 @@ logger = getLogger(__name__)
 logger.warning("retux is in alpha. If you come across a bug, please file a GitHub Issue.")
 
 
-class BotProtocol(Protocol):
-    def __init__(self, intents: Intents):
-        ...
-
-    def start(self, token: str):
-        ...
-
-    def close(self):
-        ...
-
-    async def restart(self):
-        ...
-
-    async def on(
-        self, coro: NotNeeded[Coroutine] = MISSING, *, name: NotNeeded[str] = MISSING
-    ) -> Callable[..., Any]:
-        ...
-
-    @property
-    def latency(self) -> float:
-        ...
-
-    @property
-    def offline(self) -> bool:
-        ...
-
-
-class Bot(BotProtocol):
+class Bot:
     """
     Represents a bot's connection to Discord.
 
@@ -69,7 +42,7 @@ class Bot(BotProtocol):
     These are used to help dispatch Gateway events.
     """
 
-    def __init__(self, intents: Intents):
+    def __init__(self, intents: Intents = Intents.NON_PRIVILEGED):
         self.intents = intents
         self._gateway = MISSING
         self.http = MISSING
@@ -237,10 +210,10 @@ class Bot(BotProtocol):
             self._register(coro, name=name if name is not MISSING else coro.__name__)
             return coro
 
-        if coro is not MISSING:
-            return decor(coro)
-
-        return decor
+        if isinstance(coro, str):
+            name = coro
+            return decor
+        return decor if coro is MISSING else decor(coro)
 
     @property
     def latency(self) -> float:

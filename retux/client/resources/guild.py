@@ -8,7 +8,7 @@ from .emoji import Emoji
 from .sticker import Sticker
 from .role import Role
 
-from .abc import Object, Partial, Snowflake, Timestamp
+from .misc import Object, Partial, Snowflake, Timestamp
 
 __all__ = (
     "Guild",

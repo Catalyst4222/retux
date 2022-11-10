@@ -4,7 +4,7 @@ from attrs import define, field
 
 from ...utils.converters import list_c
 
-from .abc import Component
+from .misc import Component
 
 __all__ = (
     "ActionRow",
