@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import IntEnum, IntFlag
 
 from attrs import define
-from .abc import Sendable
+
 from .misc import Timestamp, Snowflake, Object, Partial
 from .application import Application
 from .sticker import Sticker, StickerItem
@@ -638,109 +638,134 @@ class Channel(Partial, Object):
         Channel flags combined as a bitfield.
     """
 
+    def __new__(cls, *args, **kwargs):
+        if cls is not Channel:
+            return object.__new__(cls)
+
+        # some fun magic to get the right type if a plain Channel is created
+        match kwargs.get("type"):
+            case ChannelType.DM:
+                return object.__new__(DMChannel)
+            case ChannelType.GUILD_TEXT:
+                return object.__new__(GuildText)
+            case ChannelType.GUILD_VOICE:
+                return object.__new__(GuildVoice)
+            case ChannelType.GUILD_FORUM:
+                return object.__new__(ForumChannel)
+            case ChannelType.GUILD_NEWS:
+                return object.__new__(AnnouncementChannel)
+            case ChannelType.GUILD_STAGE_VOICE:
+                return object.__new__(StageChannel)
+            case ChannelType.GUILD_NEWS_THREAD | ChannelType.GUILD_PUBLIC_THREAD | ChannelType.GUILD_PRIVATE_THREAD:
+                return object.__new__(ThreadChannel)
+            case ChannelType.GUILD_CATEGORY:
+                return object.__new__(GuildChannel)
+            case _:
+                return object.__new__(Channel)
+
     id: Snowflake
     """The ID of the channel."""
     type: ChannelType
     """The type of the channel."""
-    # guild_id: Snowflake = None
-    # """
-    # The ID of the guild.
-    #
-    # This is nullable due to some Gateway events
-    # lacking the data for the ID.
-    # """
-    # position: int = None
-    # """Sorted position of the channel."""
-    # permission_overwrites: list[Overwrite] = None
-    # """Explicit permission overwrites for members and roles."""
-    # name: str = None
-    # """
-    # The name of the channel.
-    #
-    # A channel name is in-between 1-100 characters.
-    # """
-    # topic: str = None
-    # """
-    # The topic of the channel.
-    #
-    # A channel topic is in-between 1-1024 characters.
-    # """
-    # nsfw: bool = False
-    # """Whether or not the channel is NSFW. Defaults to `False`."""
-    # last_message_id: Snowflake = None
-    # """
-    # The ID of the last message sent in this channel.
-    #
-    # Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
-    # """
-    # bitrate: int = None
-    # """The bitrate of the voice channel."""
-    # user_limit: int = None
-    # """The user limit of the voice channel."""
-    # rate_limit_per_user: int = None
-    # """
-    # Amount of seconds a user has to wait before sending another message
-    #
-    # Can be a number up to 21600. Bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
-    # """
-    # recipients: list[User] = None
-    # """The recipients of the dm."""
-    # icon: str = None
-    # """The hash for the channel's icon."""
-    # owner_id: Snowflake = None
-    # """The ID of the creator of the group dm or thread."""
-    # application_id: Snowflake = None
-    # """The ID of the application that created the dm if it is bot-created."""
-    # parent_id: Snowflake = None
-    # """
-    # The ID of the parent of the channel
-    #
-    # Represents the parent category for regular channels and the parent channel for threads.
-    # """
-    # last_pin_timestamp: str = None
-    # """The time when the last message was pinned."""
-    # rtc_region: str = None
-    # """The channel's voice region ID if present, set to automatic when left as `None`."""
-    # video_quality_mode: VideoQualityMode = None
-    # """The video quality mode of the voice channel."""
-    # message_count: int = None
-    # """"
-    # The approximated amount of messages in a thread.
-    #
-    # Stops counting at `50`.
-    # """
-    # member_count: int = None
-    # """
-    # The approximated amount of users in a thread.
-    #
-    # Stops counting at `50`.
-    # """
-    # thread_metadata: ThreadMetadata = None
-    # """Thread-specific fields not needed by other channels."""
-    # member: ThreadMember = None
-    # """
-    # The thread member representation of the user if they have joined the thread.
-    #
-    # This is only included on certain api endpoints.
-    # """
-    # default_auto_archive_duration: int = None
-    # """
-    # The default archive duration for threads in minutes.
-    #
-    # Can be set to `60`, `1440`, `4320`, `10080`.
-    # """
-    # permissions: str = None
-    # """
-    # The computed permissions for the invoking user in the channel, including any overwrites.
-    #
-    # Only included when part of the resolved data received on a slash command interaction.
-    # """
-    # flags: ChannelFlags = None
-    # """Channel flags combined as a bitfield."""
+    guild_id: Snowflake = None
+    """
+    The ID of the guild.
+
+    This is nullable due to some Gateway events
+    lacking the data for the ID.
+    """
+    position: int = None
+    """Sorted position of the channel."""
+    permission_overwrites: list[Overwrite] = None
+    """Explicit permission overwrites for members and roles."""
+    name: str = None
+    """
+    The name of the channel.
+
+    A channel name is in-between 1-100 characters.
+    """
+    topic: str = None
+    """
+    The topic of the channel.
+
+    A channel topic is in-between 1-1024 characters.
+    """
+    nsfw: bool = False
+    """Whether or not the channel is NSFW. Defaults to `False`."""
+    last_message_id: Snowflake = None
+    """
+    The ID of the last message sent in this channel.
+
+    Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
+    """
+    bitrate: int = None
+    """The bitrate of the voice channel."""
+    user_limit: int = None
+    """The user limit of the voice channel."""
+    rate_limit_per_user: int = None
+    """
+    Amount of seconds a user has to wait before sending another message
+
+    Can be a number up to 21600. Bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
+    """
+    recipients: list[User] = None
+    """The recipients of the dm."""
+    icon: str = None
+    """The hash for the channel's icon."""
+    owner_id: Snowflake = None
+    """The ID of the creator of the group dm or thread."""
+    application_id: Snowflake = None
+    """The ID of the application that created the dm if it is bot-created."""
+    parent_id: Snowflake = None
+    """
+    The ID of the parent of the channel
+
+    Represents the parent category for regular channels and the parent channel for threads.
+    """
+    last_pin_timestamp: str = None
+    """The time when the last message was pinned."""
+    rtc_region: str = None
+    """The channel's voice region ID if present, set to automatic when left as `None`."""
+    video_quality_mode: VideoQualityMode = None
+    """The video quality mode of the voice channel."""
+    message_count: int = None
+    """"
+    The approximated amount of messages in a thread.
+
+    Stops counting at `50`.
+    """
+    member_count: int = None
+    """
+    The approximated amount of users in a thread.
+
+    Stops counting at `50`.
+    """
+    thread_metadata: ThreadMetadata = None
+    """Thread-specific fields not needed by other channels."""
+    member: ThreadMember = None
+    """
+    The thread member representation of the user if they have joined the thread.
+
+    This is only included on certain api endpoints.
+    """
+    default_auto_archive_duration: int = None
+    """
+    The default archive duration for threads in minutes.
+
+    Can be set to `60`, `1440`, `4320`, `10080`.
+    """
+    permissions: str = None
+    """
+    The computed permissions for the invoking user in the channel, including any overwrites.
+
+    Only included when part of the resolved data received on a slash command interaction.
+    """
+    flags: ChannelFlags = None
+    """Channel flags combined as a bitfield."""
 
 
 @define(kw_only=True)
-class TextChannel(Channel, Sendable):
+class TextChannel(Channel):  # todo add sendable abc
     """
     Represents a text channel from Discord.
 
@@ -904,7 +929,7 @@ class GuildText(GuildChannel, TextChannel):
 
 
 @define(kw_only=True)
-class AnnouncementChannel(TextChannel):
+class AnnouncementChannel(GuildChannel):
     """
     Represents an announcement channel on Discord.
 
@@ -985,7 +1010,7 @@ class AnnouncementChannel(TextChannel):
 
 
 @define(kw_only=True)
-class ForumChannel(TextChannel):
+class ForumChannel(GuildChannel):
     """
     Represents a forum channel on Discord.
 
@@ -1281,7 +1306,7 @@ class GuildVoice(Channel):  # All voice things have to be in a guild, right?
 
 
 @define(kw_only=True)
-class VoiceChannel(GuildVoice):
+class VoiceChannel(GuildVoice):  # todo add sendable abc
     """
     Represents a voice channel from Discord.
 
