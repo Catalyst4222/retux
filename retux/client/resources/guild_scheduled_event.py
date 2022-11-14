@@ -1,9 +1,10 @@
-from .misc import Snowflake, Object, Timestamp
-from .user import User
-from .guild import Member
+from enum import IntEnum
 
 from attrs import define
-from enum import IntEnum
+
+from .guild import Member
+from .misc import Object, Timestamp
+from .user import User
 
 __all__ = (
     "GuildScheduledEvent",
@@ -105,15 +106,15 @@ class GuildScheduledEvent(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID belonging to the scheduled event.
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild the event belongs to.
-    channel_id : `Snowflake`, optional
+    channel_id : `int`, optional
         The ID of the channel the event will be hosted in, if any.
 
         This is not available for Events with the `entity_type` `EXTERNAL`.
-    creator_id : `Snowflake`, optional
+    creator_id : `int`, optional
         The ID of the user who created the event, if any.
 
         This is only available for events created after October 25th, 2021.
@@ -133,7 +134,7 @@ class GuildScheduledEvent(Object):
         The status of the scheduled event.
     entity_type : `GuildScheduledEventEntityType`
         The type of the scheduled event.
-    entity_id : `Snowflake`, optional
+    entity_id : `int`, optional
         The ID of an entity associated with a guild scheduled event, if any.
     entity_metadata : `GuildScheduledEventEntityMetadata`, optional
         Additional metadata for the guild scheduled event, if any.
@@ -148,13 +149,13 @@ class GuildScheduledEvent(Object):
         The cover image hash of the scheduled event.
     """
 
-    id: Snowflake
+    id: int
     """The ID belonging to the scheduled event."""
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild the event belongs to."""
-    channel_id: Snowflake
+    channel_id: int
     """The ID of the channel the event will be hosted in."""
-    creator_id: Snowflake = None
+    creator_id: int | None = None
     """The ID of the user who created the event."""
     name: str
     """The name of the scheduled event (1-100 characters)."""
@@ -170,13 +171,13 @@ class GuildScheduledEvent(Object):
     """The status of the scheduled event."""
     entity_type: GuildScheduledEventEntityType
     """The type of the scheduled event."""
-    entity_id: Snowflake = None
+    entity_id: int | None = None
     """The ID of an entity associated with a guild scheduled event."""
     entity_metadata: GuildScheduledEventEntityMetadata = None
     """Additional metadata for the guild scheduled event."""
     creator: User = None
     """The user that created the scheduled event."""
-    user_count: int = None
+    user_count: int | None = None
     """The number of users subscribed to the scheduled event."""
     image: str = None
     """The cover image hash of the scheduled event."""
@@ -188,7 +189,7 @@ class GuildScheduledEventUser:
 
     Attributes
     ----------
-    guild_scheduled_event_id : `Snowflake`
+    guild_scheduled_event_id : `int`
         The scheduled event ID which the user subscribed to.
     user : `User`
         The user which subscribed to an event.
@@ -196,7 +197,7 @@ class GuildScheduledEventUser:
         Guild member data for this user for the guild which this event belongs to, if any.
     """
 
-    guild_scheduled_event_id: Snowflake
+    guild_scheduled_event_id: int
     """The scheduled event id which the user subscribed to."""
     user: User = None
     """The user which subscribed to an event."""

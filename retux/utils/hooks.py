@@ -1,5 +1,6 @@
 from cattrs import Converter, register_structure_hook
-from ..client.resources.misc import Snowflake, Timestamp
+
+from ..client.resources.misc import Timestamp
 
 __all__ = "cattrs_structure_hooks"
 
@@ -24,5 +25,5 @@ def cattrs_structure_hooks(converter: Converter = None):
         reg = converter.register_structure_hook
     else:
         reg = register_structure_hook
-    reg(Snowflake, _pos_arg)
+    # reg(Snowflake, _pos_arg)
     reg(Timestamp, _pos_arg)

@@ -3,7 +3,6 @@ from enum import IntEnum
 from attrs import define, field
 
 from ...utils.converters import list_c
-
 from .misc import Component
 
 __all__ = (

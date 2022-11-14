@@ -1,8 +1,8 @@
-from .misc import Snowflake, Timestamp
-from .user import User
-from .guild import Guild
-
 from attrs import define
+
+from .guild import Guild
+from .misc import Timestamp
+from .user import User
 
 __all__ = ("GuildTemplate",)
 
@@ -22,7 +22,7 @@ class GuildTemplate:
         The description of the template, if any.
     usage_count : `int`
         The amount of times this template has been used.
-    creator_id : `Snowflake`
+    creator_id : `int`
         The ID of the user who created the template.
     creator : `User`
         The user who created the template.
@@ -30,7 +30,7 @@ class GuildTemplate:
         When this template was created.
     updated_at : `datetime`
         When this template was last synced to the source guild.
-    source_guild_id : `Snowflake`
+    source_guild_id : `int`
         The ID of the guild this template is based on.
     serialized_source_guild : `Guild`
         The guild snapshot this template contains.
@@ -46,7 +46,7 @@ class GuildTemplate:
     """The description of the template, if any."""
     usage_count: int
     """The amount of times this template has been used."""
-    creator_id: Snowflake
+    creator_id: int
     """The ID of the user who created the template."""
     creator: User
     """The user who created the template."""
@@ -54,7 +54,7 @@ class GuildTemplate:
     """When this template was created."""
     updated_at: Timestamp
     """When this template was last synced to the source guild."""
-    source_guild_id: Snowflake
+    source_guild_id: int
     """The ID of the guild this template is based on."""
     serialized_source_guild: Guild
     """The guild snapshot this template contains."""

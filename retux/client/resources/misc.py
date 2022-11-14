@@ -1,19 +1,16 @@
+from base64 import b64encode
 from datetime import datetime
 from enum import Enum
-from typing import Union
+from io import IOBase
 
 from attr import field
-
-from ...const import MISSING, NotNeeded
-from io import IOBase
-from base64 import b64encode
 from attrs import define
 
+from ...const import MISSING, NotNeeded
 
 __all__ = (
     "ImageData",
     "Component",
-    "Snowflake",
     "CDNEndpoint",
     "Image",
     "TimestampStyle",
@@ -95,96 +92,6 @@ class ImageData:
     @property
     def type(self) -> str:
         return self.file.split(".")[-1]
-
-
-@define(repr=False, eq=False)
-class Snowflake:
-    """
-    Represents an unique identifier for a Discord resource.
-
-    ---
-
-    Discord utilizes Twitter's snowflake format for uniquely identifiable descriptors
-    (IDs). These IDs are guaranteed to be unique across all of Discord, except in some
-    unique scenarios in which child objects share their parent's ID.
-
-    ---
-
-    Attributes
-    ----------
-    _snowflake : `str`
-        The internally stored snowflake. Snowflakes are always in string-form.
-
-        This value should never need to be directly checked. Please use the
-        representation of the class itself to do this for identity comparisons.
-
-    Methods
-    -------
-    timestamp : `datetime.datetime`
-        The timestamp of the snowflake as a UTC-native datetime.
-
-        Timestamps are denoted as milliseconds since the Discord Epoch:
-        the first second of 2015, or or `1420070400000`.
-    worker_id : `int`
-        The internal worker ID of the snowflake.
-    process_id : `int`
-        The internal process ID of the snowflake.
-    increment : `int`
-        The internal incrementation number of the snowflake.
-
-        This value will only increment when a process has been
-        generated on this snowflake, e.g. a resource.
-    """
-
-    _snowflake: str | int = field(converter=str)
-    """
-    The internally stored snowflake. Snowflakes are always in string-form.
-
-    The snowflake may only be `None` in the event that a given
-    field in a resource does not supply it. This should not be always
-    taken for granted as having a value. Please use the representation
-    of the class itself.
-    """
-
-    def __repr__(self) -> str | None:
-        return self._snowflake
-
-    def __eq__(self, other: Union[str, int, "Snowflake"]) -> bool:
-        if type(other) == int:
-            return int(self._snowflake) == other
-        else:
-            return self._snowflake == str(other)
-
-    @property
-    def timestamp(self) -> datetime:
-        """
-        The timestamp of the snowflake as a UTC-native datetime.
-
-        Timestamps are denoted as milliseconds since the Discord Epoch:
-        the first second of 2015, or `1420070400000`.
-        """
-        retrieval: int | float = (int(self._snowflake) >> 22) + 1420070400000
-        return datetime.utcfromtimestamp(retrieval)
-
-    @property
-    def worker_id(self) -> int:
-        """The internal worker ID of the snowflake."""
-        return (int(self._snowflake) & 0x3E0000) >> 17
-
-    @property
-    def process_id(self) -> int:
-        """The internal process ID of the snowflake."""
-        return (int(self._snowflake) & 0x1F000) >> 12
-
-    @property
-    def increment(self) -> int:
-        """
-        The internal incrementation number of the snowflake.
-
-        This value will only increment when a process has been
-        generated on this snowflake, e.g. a resource.
-        """
-        return int(self._snowflake) & 0xFFF
 
 
 class CDNEndpoint(Enum):
@@ -616,11 +523,11 @@ class Object:
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID associated to the object.
     """
 
-    id: Snowflake
+    id: int
     """The ID associated to the object."""
     _bot_inst: NotNeeded["Bot"] = MISSING  # noqa F821
     """An instance of `Bot` used for helper methods."""

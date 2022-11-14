@@ -1,11 +1,12 @@
-from .misc import Timestamp
-from .user import User
-from .guild import Guild, Member
-from .channel import Channel
-from .application import Application
+from enum import IntEnum
 
 from attrs import define
-from enum import IntEnum
+
+from .application import Application
+from .channel import Channel
+from .guild import Guild, Member
+from .misc import Timestamp
+from .user import User
 
 
 class InviteTargetType(IntEnum):
@@ -101,9 +102,9 @@ class Invite:
     """The user whose stream to display for this voice channel stream invite, if any."""
     target_application: Application = None
     """The embedded application to open for this voice channel embedded application invite, if any"""
-    approximate_presence_count: int = None
+    approximate_presence_count: int | None = None
     """Approximate count of online members, returned from the `Get Invites` endpoint when `with_counts=True`."""
-    approximate_member_count: int = None
+    approximate_member_count: int | None = None
     """Approximate count of total members, returned from the `Get Invites` endpoint when `with_counts=True`."""
     expires_at: Timestamp = None
     """The expiration date of this invite, returned from the `Get Invites` endpoint when `with_expiration=True`."""

@@ -6,8 +6,8 @@ from trio import run
 from ..api import GatewayClient
 from ..api.http import HTTPClient
 from ..const import MISSING, NotNeeded
-from .flags import Intents
 from ..utils.hooks import cattrs_structure_hooks
+from .flags import Intents
 
 logger = getLogger(__name__)
 logger.warning("retux is in alpha. If you come across a bug, please file a GitHub Issue.")

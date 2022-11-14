@@ -1,10 +1,11 @@
-from .misc import Snowflake, Object
-from .user import User
-from .guild import Guild
-from .channel import Channel
+from enum import IntEnum
 
 from attrs import define
-from enum import IntEnum
+
+from .channel import Channel
+from .guild import Guild
+from .misc import Object
+from .user import User
 
 
 class WebhookType(IntEnum):
@@ -36,13 +37,13 @@ class Webhook(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the webhook.
     type : `WebhookType`
         The type of the webhook.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The guild ID this webhook is for, if any.
-    channel_id : `Snowflake`, optional
+    channel_id : `int`, optional
         The channel ID this webhook is for, if any.
     user : `User`, optional
         The user this webhook was created by.
@@ -54,7 +55,7 @@ class Webhook(Object):
         The default user avatar hash of the webhook, if any.
     token : `str`, optional
         The secure token of the webhook, if any. This is returned for `INCOMING` webhooks.
-    application_id : `Snowflake`, optional
+    application_id : `int`, optional
         The bot/OAuth2 application that created this webhook, if any.
     source_guild : `Guild`, optional
         The guild of the channel that this webhook is following, if any. Returned for `CHANNEL_FOLLOWER` webhooks.
@@ -64,13 +65,13 @@ class Webhook(Object):
         The url used for executing the webhook, if any. This is returned by the webhooks OAuth2 flow.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the webhook."""
     type: WebhookType
     """The type of the webhook."""
-    guild_id: Snowflake = None
+    guild_id: int | None = None
     """The guild ID this webhook is for, if any."""
-    channel_id: Snowflake = None
+    channel_id: int | None = None
     """The channel ID this webhook is for, if any."""
     user: User = None
     """The user this webhook was created by, if any."""
@@ -80,7 +81,7 @@ class Webhook(Object):
     """The default user avatar hash of the webhook, if any."""
     token: str = None
     """The secure token of the webhook, if any. This is returned for `INCOMING` webhooks."""
-    application_id: Snowflake = None
+    application_id: int | None = None
     """The bot/OAuth2 application that created this webhook, if any."""
     source_guild: Guild = None
     """The guild of the channel that this webhook is following, if any. Returned for `CHANNEL_FOLLOWER` webhooks."""

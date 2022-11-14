@@ -1,7 +1,8 @@
 from enum import IntEnum, IntFlag
+
 from attrs import define
 
-from .misc import Snowflake, Object
+from .misc import Object
 
 __all__ = ("User", "UserFlags", "UserPremiumType")
 
@@ -77,7 +78,7 @@ class User(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the user.
     username : `str`
         The name of the user.
@@ -117,7 +118,7 @@ class User(Object):
         The mentionable version of the user.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the user."""
     username: str
     """The name of the user."""
@@ -133,7 +134,7 @@ class User(Object):
     """Whether the user has 2FA (two-factor authentication) enabled or not."""
     banner: str | None = False
     """The hash of the user's banner, if present."""
-    accent_color: int = None
+    accent_color: int | None = None
     """The color of the user's banner, if present."""
     locale: str = None
     """The user's selected locale, if present."""

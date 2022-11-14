@@ -1,8 +1,8 @@
-from attrs import define
 from enum import IntFlag
 
+from attrs import define
 
-from .misc import Object, Partial, Snowflake
+from .misc import Object, Partial
 from .user import User
 
 __all__ = ("PartialApplication", "Application", "ApplicationFlags", "InstallParams")
@@ -58,13 +58,13 @@ class PartialApplication(Partial):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the application.
     flags : `ApplicationFlags`
         The public flags of the application.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the application."""
     flags: ApplicationFlags = 0
     """The public flags of the application. Defaults to `0`."""
@@ -77,7 +77,7 @@ class Application(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the application.
     name : `str`
         The name of the application.
@@ -107,9 +107,9 @@ class Application(Object):
     verify_key : `str`
         The hex encoded key for verification in interactions and the
         gamesdk's getticket.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild if the application is a game sold on Discord.
-    primary_sku_id : `Snowflake`, optional
+    primary_sku_id : `int`, optional
         The ID of the "game sku" if it exists and the application is a
         game sold on Discord.
     slug : `str`, optional
@@ -131,7 +131,7 @@ class Application(Object):
         The application's default custom authorization link.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the application."""
     name: str
     """The name of the application."""
@@ -164,9 +164,9 @@ class Application(Object):
     # TODO: implement Team object
     # team: dict | Team = field(converter=Team)  # noqa
     # """A team object representing the team that the application belongs to."""
-    guild_id: Snowflake = None
+    guild_id: int | None = None
     """The ID of the guild if the application is a sold game."""
-    primary_sku_id: Snowflake = None
+    primary_sku_id: int | None = None
     """The ID of the "game sku" if it exists and the application is a game sold on Discord."""
     slug: str = None
     """IThe url slug that links to the application's store page if it is a game sold on Discord."""

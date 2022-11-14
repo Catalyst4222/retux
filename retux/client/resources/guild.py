@@ -1,14 +1,13 @@
-from enum import IntFlag
+from enum import IntEnum, IntFlag
 from typing import Any
-from enum import IntEnum
+
 from attrs import define
 
-from .user import User, UserFlags, UserPremiumType
 from .emoji import Emoji
-from .sticker import Sticker
+from .misc import Object, Partial, Timestamp
 from .role import Role
-
-from .misc import Object, Partial, Snowflake, Timestamp
+from .sticker import Sticker
+from .user import User, UserFlags, UserPremiumType
 
 __all__ = (
     "Guild",
@@ -33,21 +32,21 @@ class WelcomeScreenChannel:
 
     Attributes
     ----------
-    channel_id : `Snowflake`
+    channel_id : `int`
         The ID of the channel shown.
     description : `str`
         A description shown with the channel.
-    emoji_id : `Snowflake`, optional
+    emoji_id : `int`, optional
         The ID of the emoji if it isn't a unicode.
     emoji_name : `str`, optional
         The name of the emoji, if present.
     """
 
-    channel_id: Snowflake
+    channel_id: int
     """The ID of the channel shown."""
     description: str
     """A description shown with the channel."""
-    emoji_id: Snowflake = None
+    emoji_id: int | None = None
     """The ID of the emoji if it isn't a unicode."""
     emoji_name: str = None
     """The name of the emoji, if present."""
@@ -201,7 +200,7 @@ class UnavailableGuild(Partial, Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the unavailable guild.
     unavailable : `bool`
         Whether the guild is unavailable or not.
@@ -210,7 +209,7 @@ class UnavailableGuild(Partial, Object):
         the class representation itself for this.
     """
 
-    id: Snowflake
+    id: int
     unavailable: bool = True
 
     def __repr__(self) -> bool:
@@ -225,13 +224,13 @@ class Guild(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the guild.
     name : `str`
         The name of the guild.
     icon : `str`
         The icon of the guild in a URL format.
-    owner_id : `Snowflake`
+    owner_id : `int`
         The ID of the owner of the guild.
     afk_timeout : `int`
         The current set AFK timeout in seconds for the guild.
@@ -257,7 +256,7 @@ class Guild(Object):
         Whether the guild has the server boosting bar enabled or not.
     owner : `bool`
         Whether the user who invoked the guild is the owner or not.
-    afk_channel_id : `Snowflake`, optional
+    afk_channel_id : `int`, optional
         The ID of the AFK channel inside the guild, if present.
     icon_hash : `str`, optional
         The icon of the guild in a hash format.
@@ -277,15 +276,15 @@ class Guild(Object):
         be used.
     widget_enabled : `bool`
         Whether the server has its widget enabled or not.
-    widget_channel_id : `Snowflake`, optional
+    widget_channel_id : `int`, optional
         The ID of the channel which the widget targets, if present.
     emojis : `list[Emoji]`, optional
         The Emojis that the guild owns.
-    application_id : `Snowflake`, optional
+    application_id : `int`, optional
         The ID of the application for the guild if created via. a bot.
-    system_channel_id : `Snowflake`, optional
+    system_channel_id : `int`, optional
         The ID of the system welcome messages channel, if present.
-    rules_channel_id : `Snowflake`, optional
+    rules_channel_id : `int`, optional
         The ID of the rules channel, if presently determined as a Community server.
     max_presences : `int`, optional
         The maximum amount of presences allowed in the guild. Always set to `0`
@@ -301,7 +300,7 @@ class Guild(Object):
         The banner of the guild, if present.
     premium_subscription_count : `int`, optional
         The approximated count of boosts the guild has.
-    public_updates_channel_id : `Snowflake`, optional
+    public_updates_channel_id : `int`, optional
         The community moderation-only ID of the channel in the guild, if present.
     max_video_channel_users : `int`
         The maximum amount of users in a voice channel allowed to have video on.
@@ -316,13 +315,13 @@ class Guild(Object):
         The stickers that the guild owns.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the guild."""
     name: str
     """The name of the guild."""
     icon: str
     """The icon of the guild in a URL format."""
-    owner_id: Snowflake
+    owner_id: int
     """The ID of the owner of the guild."""
     afk_timeout: int
     """The current set AFK timeout in seconds for the guild."""
@@ -348,7 +347,7 @@ class Guild(Object):
     """Whether the guild has the server boosting bar enabled or not."""
     owner: bool = False
     """Whether the user who invoked the guild is the owner or not."""
-    afk_channel_id: Snowflake = None
+    afk_channel_id: int | None = None
     """The ID of the AFK channel inside the guild, if present."""
     icon_hash: str = None
     """
@@ -372,23 +371,23 @@ class Guild(Object):
     """
     widget_enabled: bool = False
     """Whether the server has its widget enabled or not."""
-    widget_channel_id: Snowflake = None
+    widget_channel_id: int | None = None
     """The ID of the channel which the widget targets, if present."""
     roles: list[Role] = None
     """The roles that the guild has, if present."""
     emojis: list[Emoji] = None
     """The Emojis that the guild owns."""
-    application_id: Snowflake = None
+    application_id: int | None = None
     """The ID of the application for the guild if created via. a bot."""
-    system_channel_id: Snowflake = None
+    system_channel_id: int | None = None
     """The ID of the system welcome messages channel, if present."""
-    rules_channel_id: Snowflake = None
+    rules_channel_id: int | None = None
     """The ID of the rules channel, if presently determined as a Community server."""
-    max_presences: int = None
+    max_presences: int | None = None
     """
     The maximum amount of presences allowed in the guild. Always set to `0`
     underneath a guild size cap."""
-    max_members: int = None
+    max_members: int | None = None
     """The maximum amount of members allowed in the guild.
     Globally set to `800000` currently.
     """
@@ -398,18 +397,18 @@ class Guild(Object):
     """The description of the guild, if presently determined as a Community server."""
     banner: str = None
     """The banner of the guild, if present."""
-    premium_subscription_count: int = None
+    premium_subscription_count: int | None = None
     """The approximated count of boosts the guild has."""
-    public_updates_channel_id: Snowflake = None
+    public_updates_channel_id: int | None = None
     """The community moderation-only ID of the channel in the guild, if present."""
     max_video_channel_users: int = 25
     """
     The maximum amount of users in a voice channel allowed to have video on.
     Globally set to `25` currently.
     """
-    approximate_member_count: int = None
+    approximate_member_count: int | None = None
     """The approximated member count of the guild."""
-    approximate_presence_count: int = None
+    approximate_presence_count: int | None = None
     """The approximated amount of presences in the guild."""
     welcome_screen: WelcomeScreen = None
     """The welcome screen of the guild, if present."""
@@ -424,7 +423,7 @@ class GuildPreview(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the guild being previewed.
     name : `str`
         The name of the guild being previewed.
@@ -451,7 +450,7 @@ class GuildPreview(Object):
         The stickers of the guild being previewed.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the guild being previewed."""
     name: str
     """The name of the guild being previewed."""
@@ -488,7 +487,7 @@ class GuildPreview(Object):
 class GuildWidget(Object):
     """Represents the widget of a guild from Discord."""
 
-    id: Snowflake
+    id: int
     """The ID of the guild on the widget."""
     name: str
     """The name of the guild on the widget."""
@@ -511,14 +510,14 @@ class GuildWidgetSettings:
     ----------
     enabled : `bool`
         Whether the widget is enabled for the guild or not.
-    channel_id : `Snowflake`, optional
+    channel_id : `int`, optional
         The ID of the channel shown in the guild's widget,
         if present.
     """
 
     enabled: bool
     """Whether the widget is enabled for the guild or not."""
-    channel_id: Snowflake = None
+    channel_id: int | None = None
     """The ID of the channel shown in the guild's widget, if present."""
 
 
@@ -551,10 +550,10 @@ class Member(Partial):
         The nickname of the member in the guild, if present.
     avatar : `str`, optional
         The hash of the guild member's avatar, if present.
-    roles : `list[Snowflake]`, optional
+    roles : `list[int]`, optional
         The roles of the member in the guild, if present.
 
-        Roles are only provided in the form of `Snowflake` objects,
+        Roles are only provided in the form of `int` objects,
         and are not given as a `Role` object. This is subject to change
         in the future.
     joined_at : `datetime`
@@ -583,7 +582,7 @@ class Member(Partial):
 
     Methods
     -------
-    id : `Snowflake`, optional
+    id : `int`, optional
         The ID of the user, if present.
     username : `str,` optional
         The ID of the user, if present.
@@ -628,11 +627,11 @@ class Member(Partial):
     """The hash of the guild member's avatar, if present."""
     # TODO: change roles field to give a list of Role objects. This is an API
     # limitation.
-    roles: list[Snowflake] = None
+    roles: list[int] = None
     """
     The roles of the member in the guild, if present.
 
-    Roles are only provided in the form of `Snowflake` objects, and are not given
+    Roles are only provided in the form of `int` objects, and are not given
     as a `Role` object. This is subject to change in the future.
     """
     joined_at: Timestamp
@@ -696,7 +695,7 @@ class Member(Partial):
             return None
 
     @property
-    def id(self) -> Snowflake | None:
+    def id(self) -> int | None:
         """The ID of the user, if present."""
         return self.exists(self.user, self.user.id)
 

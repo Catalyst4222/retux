@@ -1,7 +1,6 @@
-from .misc import Snowflake, Object
-
 from attrs import define
 
+from .misc import Object
 
 __all__ = (
     "Role",
@@ -16,17 +15,17 @@ class RoleTags:
 
     Attributes
     ----------
-    bot_id : `Snowflake`, optional
+    bot_id : `int`, optional
         The ID of the bot this role belongs to.
-    integration_id : `Snowflake`, optional
+    integration_id : `int`, optional
         The ID of the integration this role belongs to.
     premium_subscriber : `bool`
         Whether this is the guild's premium subscriber role.
     """
 
-    bot_id: Snowflake = None
+    bot_id: int | None = None
     """The id of the bot this role belongs to."""
-    integration_id: Snowflake = None
+    integration_id: int | None = None
     """The id of the integration this role belongs to."""
     premium_subscriber: bool = False
     """Whether this is the guild's premium subscriber role."""
@@ -39,7 +38,7 @@ class Role(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the role.
     name : `str`
         The name of the role.
@@ -61,7 +60,7 @@ class Role(Object):
         The tags this role has, if present.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the role."""
     name: str
     """The name of the role."""

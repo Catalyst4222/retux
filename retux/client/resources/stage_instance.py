@@ -1,7 +1,6 @@
-from .misc import Snowflake
+from enum import IntEnum
 
 from attrs import define
-from enum import IntEnum
 
 __all__ = (
     "StageInstance",
@@ -34,11 +33,11 @@ class StageInstance:
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of this stage instance.
-    guild_id : `Snowflake`
+    guild_id : `int`
         The guild ID of the associated stage channel.
-    channel_id : `Snowflake`
+    channel_id : `int`
         The ID of the associated stage channel.
     topic : `str`
         The topic of the stage instance (1-120 characters).
@@ -46,15 +45,15 @@ class StageInstance:
         The privacy level of the Stage instance.
     discoverable_disabled : `bool`
         Whether or not Stage Discovery is disabled (deprecated).
-    guild_scheduled_event_id : `Snowflake`, optional
+    guild_scheduled_event_id : `int`, optional
         The ID of the scheduled event for this Stage instance.
     """
 
-    id: Snowflake
+    id: int
     """The ID of this stage instance."""
-    guild_id: Snowflake
+    guild_id: int
     """The guild ID of the associated stage channel."""
-    channel_id: Snowflake
+    channel_id: int
     """The ID of the associated stage channel."""
     topic: str
     """The topic of the stage instance (1-120 characters)."""
@@ -62,7 +61,7 @@ class StageInstance:
     """The privacy level of the stage instance."""
     discoverable_disabled: bool = False
     """Whether or not Stage Discovery is disabled (deprecated)."""
-    guild_scheduled_event_id: Snowflake
+    guild_scheduled_event_id: int
     """The ID of the scheduled event for this stage instance."""
 
 

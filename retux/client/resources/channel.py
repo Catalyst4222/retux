@@ -3,11 +3,11 @@ from enum import IntEnum, IntFlag
 
 from attrs import define
 
-from .misc import Timestamp, Snowflake, Object, Partial
 from .application import Application
+from .misc import Object, Partial, Timestamp
+from .role import Role
 from .sticker import Sticker, StickerItem
 from .user import User
-from .role import Role
 
 __all__ = (
     "Channel",
@@ -324,7 +324,7 @@ class Overwrite(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the role or user.
     type : `int`
         The type of overwrite.
@@ -336,7 +336,7 @@ class Overwrite(Object):
         The bit set representing the overwrite's denied permissions.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the role or user."""
     type: int
     """
@@ -359,13 +359,13 @@ class MessageActivity:
     ----------
     type : `int`
         The type of message activity.
-    party_id : `Snowflake`, optional
+    party_id : `int`, optional
         The ID of a party from a rich presence event.
     """
 
     type: MessageActivityType
     """The type of message activity."""
-    party_id: Snowflake = None
+    party_id: int | None = None
     """The ID of a party from a rich presence event."""
 
 
@@ -376,11 +376,11 @@ class MessageReference:
 
     Attributes
     ----------
-    message_id : `Snowflake`, optional
+    message_id : `int`, optional
         The ID of the originating message.
-    channel_id : `Snowflake`, optional
+    channel_id : `int`, optional
         The ID of the originating message's channel.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the originating message's guild.
     fail_if_not_exists : `bool`
         Whether or not to error if the referenced doesn't exist.
@@ -388,11 +388,11 @@ class MessageReference:
         If `False`, sends as a normal, non-reply message.
     """
 
-    message_id: Snowflake = None
+    message_id: int | None = None
     """The ID of the originating message."""
-    channel_id: Snowflake = None
+    channel_id: int | None = None
     """The ID of the originating message's channel."""
-    guild_id: Snowflake = None
+    guild_id: int | None = None
     """The ID of the originating message's guild."""
     fail_if_not_exists: bool = True
     """
@@ -409,15 +409,15 @@ class FollowedChannel:
 
     Attributes
     ----------
-    channel_id : `Snowflake`
+    channel_id : `int`
         The ID of the source channel.
-    webhook_id : `Snowflake`
+    webhook_id : `int`
         The ID of the created target webhook.
     """
 
-    channel_id: Snowflake
+    channel_id: int
     """The ID of the source channel."""
-    webhook_id: Snowflake
+    webhook_id: int
     """The ID of the created target webhook."""
 
 
@@ -428,9 +428,9 @@ class ChannelMention(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the channel being mentioned.
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild containing the channel being mentioned.
     type : `ChannelType`
         The type of the channel being mentioned.
@@ -438,9 +438,9 @@ class ChannelMention(Object):
         The name of the channel being mentioned.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the channel being mentioned."""
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild containing the channel being mentioned."""
     type: ChannelType
     """The type of the channel being mentioned."""
@@ -514,11 +514,11 @@ class ThreadMember(Object):
 
     Attributes
     ----------
-    id : `Snowflake`, optional
+    id : `int`, optional
         The ID of the thread.
 
         This field is omitted on the member sent within each thread in GUILD_CREATE.
-    user_id : `Snowflake`
+    user_id : `int`
         The ID of the user.
 
         This field is omitted on the member sent within each thread in GUILD_CREATE.
@@ -530,13 +530,13 @@ class ThreadMember(Object):
         This is not needed by the bot; it is only used for client notifications.
     """
 
-    id: Snowflake = None
+    id: int | None = None
     """
     The ID of the thread.
 
     This field is omitted on the member sent within each thread in GUILD_CREATE.
     """
-    user_id: Snowflake
+    user_id: int
     """
     The ID of the user.
 
@@ -560,11 +560,11 @@ class Channel(Partial, Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the channel.
     type : `ChannelType`
         The type of the channel.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild.
         This is nullable due to some Gateway events
         lacking the data for the ID.
@@ -582,7 +582,7 @@ class Channel(Partial, Object):
         A channel topic is in-between 1-1024 characters.
     nsfw : `bool`, optional
         Whether or not the channel is NSFW. Defaults to `False`.
-    last_message_id : `Snowflake`, optional
+    last_message_id : `int`, optional
         The ID of the last message sent in this channel
 
         Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
@@ -598,11 +598,11 @@ class Channel(Partial, Object):
         The recipients of the dm.
     icon : `str`, optional
         The hash for the channel's icon.
-    owner_id : `Snowflake`, optional
+    owner_id : `int`, optional
         The ID of the creator of the group dm or thread.
-    application_id : `Snowflake`, optional
+    application_id : `int`, optional
         The ID of the application that created the dm if it is bot-created.
-    parent_id : `Snowflake`, optional
+    parent_id : `int`, optional
         The ID of the parent of the channel
 
         Represents the parent category for regular channels and the parent channel for threads.
@@ -663,18 +663,18 @@ class Channel(Partial, Object):
             case _:
                 return object.__new__(Channel)
 
-    id: Snowflake
+    id: int
     """The ID of the channel."""
     type: ChannelType
     """The type of the channel."""
-    guild_id: Snowflake = None
+    guild_id: int | None = None
     """
     The ID of the guild.
 
     This is nullable due to some Gateway events
     lacking the data for the ID.
     """
-    position: int = None
+    position: int | None = None
     """Sorted position of the channel."""
     permission_overwrites: list[Overwrite] = None
     """Explicit permission overwrites for members and roles."""
@@ -692,17 +692,17 @@ class Channel(Partial, Object):
     """
     nsfw: bool = False
     """Whether or not the channel is NSFW. Defaults to `False`."""
-    last_message_id: Snowflake = None
+    last_message_id: int | None = None
     """
     The ID of the last message sent in this channel.
 
     Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
     """
-    bitrate: int = None
+    bitrate: int | None = None
     """The bitrate of the voice channel."""
-    user_limit: int = None
+    user_limit: int | None = None
     """The user limit of the voice channel."""
-    rate_limit_per_user: int = None
+    rate_limit_per_user: int | None = None
     """
     Amount of seconds a user has to wait before sending another message
 
@@ -712,11 +712,11 @@ class Channel(Partial, Object):
     """The recipients of the dm."""
     icon: str = None
     """The hash for the channel's icon."""
-    owner_id: Snowflake = None
+    owner_id: int | None = None
     """The ID of the creator of the group dm or thread."""
-    application_id: Snowflake = None
+    application_id: int | None = None
     """The ID of the application that created the dm if it is bot-created."""
-    parent_id: Snowflake = None
+    parent_id: int | None = None
     """
     The ID of the parent of the channel
 
@@ -728,13 +728,13 @@ class Channel(Partial, Object):
     """The channel's voice region ID if present, set to automatic when left as `None`."""
     video_quality_mode: VideoQualityMode = None
     """The video quality mode of the voice channel."""
-    message_count: int = None
+    message_count: int | None = None
     """"
     The approximated amount of messages in a thread.
 
     Stops counting at `50`.
     """
-    member_count: int = None
+    member_count: int | None = None
     """
     The approximated amount of users in a thread.
 
@@ -748,7 +748,7 @@ class Channel(Partial, Object):
 
     This is only included on certain api endpoints.
     """
-    default_auto_archive_duration: int = None
+    default_auto_archive_duration: int | None = None
     """
     The default archive duration for threads in minutes.
 
@@ -779,9 +779,9 @@ class TextChannel(Channel):  # todo add sendable abc
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the channel.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild.
         This is nullable due to some Gateway events
         lacking the data for the ID.
@@ -799,7 +799,7 @@ class TextChannel(Channel):  # todo add sendable abc
         A channel topic is in-between 1-1024 characters.
     nsfw : `bool`, optional
         Whether or not the channel is NSFW. Defaults to `False`.
-    last_message_id : `Snowflake`, optional
+    last_message_id : `int`, optional
         The ID of the last message sent in this channel
 
         Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
@@ -809,11 +809,11 @@ class TextChannel(Channel):  # todo add sendable abc
         Can be a number up to 21600. Bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
     icon : `str`, optional
         The hash for the channel's icon.
-    owner_id : `Snowflake`, optional
+    owner_id : `int`, optional
         The ID of the creator of the group dm or thread.
-    application_id : `Snowflake`, optional
+    application_id : `int`, optional
         The ID of the application that created the dm if it is bot-created.
-    parent_id : `Snowflake`, optional
+    parent_id : `int`, optional
         The ID of the parent of the channel
 
         Represents the parent category for regular channels and the parent channel for threads.
@@ -845,7 +845,7 @@ class TextChannel(Channel):  # todo add sendable abc
         Channel flags combined as a bitfield.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the channel."""
     name: str = None
     """
@@ -859,7 +859,7 @@ class TextChannel(Channel):  # todo add sendable abc
 
     A channel topic is in-between 1-1024 characters.
     """
-    last_message_id: Snowflake = None
+    last_message_id: int | None = None
     """
     The ID of the last message sent in this channel.
 
@@ -884,20 +884,20 @@ class GuildChannel(Channel):
 
     A channel name is in-between 1-100 characters.
     """
-    guild_id: Snowflake = None
+    guild_id: int | None = None
     """
     The ID of the guild.
 
     This is nullable due to some Gateway events
     lacking the data for the ID.
     """
-    parent_id: Snowflake = None
+    parent_id: int | None = None
     """
     The ID of the parent of the channel
 
     Represents the parent category for regular channels and the parent channel for threads.
     """
-    position: int = None
+    position: int | None = None
     """Sorted position of the channel."""
     nsfw: bool = False
     """Whether or not the channel is NSFW. Defaults to `False`."""
@@ -914,13 +914,13 @@ class GuildText(GuildChannel, TextChannel):
 
     A channel topic is in-between 1-1024 characters.
     """
-    default_auto_archive_duration: int = None
+    default_auto_archive_duration: int | None = None
     """
     The default archive duration for threads in minutes.
 
     Can be set to `60`, `1440`, `4320`, `10080`.
     """
-    rate_limit_per_user: int = None
+    rate_limit_per_user: int | None = None
     """
     Amount of seconds a user has to wait before sending another message
 
@@ -942,9 +942,9 @@ class AnnouncementChannel(GuildChannel):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the channel.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild.
         This is nullable due to some Gateway events
         lacking the data for the ID.
@@ -962,7 +962,7 @@ class AnnouncementChannel(GuildChannel):
         A channel topic is in-between 1-1024 characters.
     nsfw : `bool`, optional
         Whether or not the channel is NSFW. Defaults to `False`.
-    last_message_id : `Snowflake`, optional
+    last_message_id : `int`, optional
         The ID of the last message sent in this channel
 
         Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
@@ -972,11 +972,11 @@ class AnnouncementChannel(GuildChannel):
         Can be a number up to 21600. Bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
     icon : `str`, optional
         The hash for the channel's icon.
-    owner_id : `Snowflake`, optional
+    owner_id : `int`, optional
         The ID of the creator of the group dm or thread.
-    application_id : `Snowflake`, optional
+    application_id : `int`, optional
         The ID of the application that created the dm if it is bot-created.
-    parent_id : `Snowflake`, optional
+    parent_id : `int`, optional
         The ID of the parent of the channel
 
         Represents the parent category for regular channels and the parent channel for threads.
@@ -1023,9 +1023,9 @@ class ForumChannel(GuildChannel):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the channel.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild.
         This is nullable due to some Gateway events
         lacking the data for the ID.
@@ -1043,7 +1043,7 @@ class ForumChannel(GuildChannel):
         A channel topic is in-between 1-1024 characters.
     nsfw : `bool`, optional
         Whether or not the channel is NSFW. Defaults to `False`.
-    last_message_id : `Snowflake`, optional
+    last_message_id : `int`, optional
         The ID of the last message sent in this channel
 
         Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
@@ -1053,11 +1053,11 @@ class ForumChannel(GuildChannel):
         Can be a number up to 21600. Bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
     icon : `str`, optional
         The hash for the channel's icon.
-    owner_id : `Snowflake`, optional
+    owner_id : `int`, optional
         The ID of the creator of the group dm or thread.
-    application_id : `Snowflake`, optional
+    application_id : `int`, optional
         The ID of the application that created the dm if it is bot-created.
-    parent_id : `Snowflake`, optional
+    parent_id : `int`, optional
         The ID of the parent of the channel
 
         Represents the parent category for regular channels and the parent channel for threads.
@@ -1113,9 +1113,9 @@ class DMChannel(TextChannel):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the channel.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild.
         This is nullable due to some Gateway events
         lacking the data for the ID.
@@ -1133,7 +1133,7 @@ class DMChannel(TextChannel):
         A channel topic is in-between 1-1024 characters.
     nsfw : `bool`, optional
         Whether or not the channel is NSFW. Defaults to `False`.
-    last_message_id : `Snowflake`, optional
+    last_message_id : `int`, optional
         The ID of the last message sent in this channel
 
         Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
@@ -1143,11 +1143,11 @@ class DMChannel(TextChannel):
         Can be a number up to 21600. Bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
     icon : `str`, optional
         The hash for the channel's icon.
-    owner_id : `Snowflake`, optional
+    owner_id : `int`, optional
         The ID of the creator of the group dm or thread.
-    application_id : `Snowflake`, optional
+    application_id : `int`, optional
         The ID of the application that created the dm if it is bot-created.
-    parent_id : `Snowflake`, optional
+    parent_id : `int`, optional
         The ID of the parent of the channel
 
         Represents the parent category for regular channels and the parent channel for threads.
@@ -1183,9 +1183,9 @@ class DMChannel(TextChannel):
     """The recipients of the dm."""
     icon: str = None
     """The hash for the dm channel's icon."""
-    owner_id: Snowflake = None
+    owner_id: int | None = None
     """The ID of the creator of the group dm."""
-    application_id: Snowflake = None
+    application_id: int | None = None
     """The ID of the application that created the dm if it is bot-created."""
 
 
@@ -1206,9 +1206,9 @@ class ThreadChannel(GuildText):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the channel.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild.
         This is nullable due to some Gateway events
         lacking the data for the ID.
@@ -1216,7 +1216,7 @@ class ThreadChannel(GuildText):
         The name of the channel.
 
         A channel name is in-between 1-100 characters.
-    last_message_id : `Snowflake`, optional
+    last_message_id : `int`, optional
         The ID of the last message sent in this channel
 
         Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
@@ -1226,9 +1226,9 @@ class ThreadChannel(GuildText):
         Can be a number up to 21600. Bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
     icon : `str`, optional
         The hash for the channel's icon.
-    owner_id : `Snowflake`, optional
+    owner_id : `int`, optional
         The ID of the creator of the group dm or thread.
-    parent_id : `Snowflake`, optional
+    parent_id : `int`, optional
         The ID of the parent of the channel
 
         Represents the parent category for regular channels and the parent channel for threads.
@@ -1258,15 +1258,15 @@ class ThreadChannel(GuildText):
         Channel flags combined as a bitfield.
     """
 
-    owner_id: Snowflake = None
+    owner_id: int | None = None
     """The ID of the creator of the thread."""
-    message_count: int = None
+    message_count: int | None = None
     """"
     The approximated amount of messages in a thread.
 
     Stops counting at `50`.
     """
-    member_count: int = None
+    member_count: int | None = None
     """
     The approximated amount of users in a thread.
 
@@ -1280,7 +1280,7 @@ class ThreadChannel(GuildText):
 
     This is only included on certain api endpoints.
     """
-    default_auto_archive_duration: int = None
+    default_auto_archive_duration: int | None = None
     """
     The default archive duration for threads in minutes.
 
@@ -1297,7 +1297,7 @@ class ThreadChannel(GuildText):
 class GuildVoice(Channel):  # All voice things have to be in a guild, right?
     """ """
 
-    bitrate: int = None
+    bitrate: int | None = None
     """The bitrate of the voice channel."""
     rtc_region: str = None
     """The channel's voice region ID if present, set to automatic when left as `None`."""
@@ -1322,9 +1322,9 @@ class VoiceChannel(GuildVoice):  # todo add sendable abc
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the channel.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild.
         This is nullable due to some Gateway events
         lacking the data for the ID.
@@ -1338,7 +1338,7 @@ class VoiceChannel(GuildVoice):  # todo add sendable abc
         A channel name is in-between 1-100 characters.
     nsfw : `bool`, optional
         Whether or not the channel is NSFW. Defaults to `False`.
-    last_message_id : `Snowflake`, optional
+    last_message_id : `int`, optional
         The ID of the last message sent in this channel
 
         Can also be a thread if the channel is a forum. May not be an existing or valid message or thread.
@@ -1352,11 +1352,11 @@ class VoiceChannel(GuildVoice):  # todo add sendable abc
         Can be a number up to 21600. Bots, as well as users with the permission manage_messages or manage_channel, are unaffected.
     icon : `str`, optional
         The hash for the channel's icon.
-    owner_id : `Snowflake`, optional
+    owner_id : `int`, optional
         The ID of the creator of the group dm or thread.
-    application_id : `Snowflake`, optional
+    application_id : `int`, optional
         The ID of the application that created the dm if it is bot-created.
-    parent_id : `Snowflake`, optional
+    parent_id : `int`, optional
         The ID of the parent of the channel
 
         Represents the parent category for regular channels and the parent channel for threads.
@@ -1392,7 +1392,7 @@ class VoiceChannel(GuildVoice):  # todo add sendable abc
         Channel flags combined as a bitfield.
     """
 
-    user_limit: int = None
+    user_limit: int | None = None
     """The user limit of the voice channel."""
 
 
@@ -1413,9 +1413,9 @@ class StageChannel(Partial, Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the channel.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild.
         This is nullable due to some Gateway events
         lacking the data for the ID.
@@ -1431,7 +1431,7 @@ class StageChannel(Partial, Object):
         The bitrate of the voice channel.
     icon : `str`, optional
         The hash for the channel's icon.
-    parent_id : `Snowflake`, optional
+    parent_id : `int`, optional
         The ID of the parent of the channel
 
         Represents the parent category for regular channels and the parent channel for threads.
@@ -1473,9 +1473,9 @@ class _EmbedMedia:
     """
     proxy_url: str = None
     """A proxied url of the media."""
-    height: int = None
+    height: int | None = None
     """The height of the media."""
-    width: int = None
+    width: int | None = None
     """The width of the media."""
 
 
@@ -1666,7 +1666,7 @@ class Attachment(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the attachment.
     filename : `str`, optional
         The name of the attached file.
@@ -1700,7 +1700,7 @@ class Attachment(Object):
         Whether or not the attachment is ephemeral.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the attachment."""
     filename: str = None
     """
@@ -1712,7 +1712,7 @@ class Attachment(Object):
     """The description of the attached file."""
     content_type: str = None
     """The type of media attached."""
-    size: int = None
+    size: int | None = None
     """
     The size of the attached file in bytes.
 
@@ -1730,13 +1730,13 @@ class Attachment(Object):
 
     Always provided by Discord. Optional for bot use.
     """
-    height: int = None
+    height: int | None = None
     """
     The height of the file.
 
     This is only used for images.
     """
-    width: int = None
+    width: int | None = None
     """
     The height of the file.
 
@@ -1753,9 +1753,9 @@ class Message(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the message.
-    channel_id : `Snowflake`
+    channel_id : `int`
         The ID of the channel containing the message.
     author : `User`
         The author of the message.
@@ -1785,7 +1785,7 @@ class Message(Object):
         Used for validating whether a message has been sent.
     pinned : `bool`
         Whether or not a message is pinned.
-    webhook_id : `Snowflake`, optional
+    webhook_id : `int`, optional
         The ID of the message's webhook, if the message was generated by a webhook.
     type : `MessageType`
         The type of the message.
@@ -1797,7 +1797,7 @@ class Message(Object):
         The application of the message's activity.
 
         Sent with Rich Presence related chat embeds.
-    application_id : `Snowflake`, optional
+    application_id : `int`, optional
         The ID of the application.
 
         Sent if the message is an interactions or an application-owned webhook.
@@ -1819,9 +1819,9 @@ class Message(Object):
         The stickers of a message.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the message."""
-    channel_id: Snowflake
+    channel_id: int
     """The ID of the channel containing the message."""
     author: User
     """The author of the message."""
@@ -1851,7 +1851,7 @@ class Message(Object):
     """Used for validating whether a message has been sent."""
     pinned: bool
     """Whether or not a message is pinned."""
-    webhook_id: Snowflake = None
+    webhook_id: int | None = None
     """The ID of the message's webhook, if the message was generated by a webhook."""
     type: MessageType
     """The type of the message."""
@@ -1867,7 +1867,7 @@ class Message(Object):
 
     Sent with Rich Presence related chat embeds.
     """
-    application_id: Snowflake = None
+    application_id: int | None = None
     """
     The ID of the application.
 

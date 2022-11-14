@@ -1,8 +1,8 @@
 from attrs import define
 
+from ...client.resources.application import PartialApplication
 from ...client.resources.guild import UnavailableGuild
 from ...client.resources.user import User
-from ...client.resources.application import PartialApplication
 
 __all__ = ("Ready", "HeartbeatAck", "Resumed", "Reconnect", "InvalidSession")
 

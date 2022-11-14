@@ -1,7 +1,7 @@
 from datetime import datetime
+
 from attrs import define, field
 
-from ...client.resources.misc import Snowflake
 from ...client.resources.guild import Member
 
 
@@ -12,13 +12,13 @@ class TypingStart:
 
     Attributes
     ----------
-    channel_id : `Snowflake`
+    channel_id : `int`
         The ID of the channel when typing occured.
-    user_id : `Snowflake`
+    user_id : `int`
         The ID of the user who started typing.
     timestamp : `datetime.datetime`
         The timestamp of when the typing occured.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild when typing occured.
 
         This will only appear when a user is typing
@@ -30,13 +30,13 @@ class TypingStart:
         outside of a DM.
     """
 
-    channel_id: Snowflake
+    channel_id: int
     """The ID of the channel when typing occured."""
-    user_id: Snowflake
+    user_id: int
     """The ID of the user who started typing."""
     timestamp: datetime = field(converter=datetime.fromtimestamp)
     """The timestamp of when the typing occured."""
-    guild_id: Snowflake = None
+    guild_id: int | None = None
     """
     The ID of the guild when typing occured.
 

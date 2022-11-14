@@ -2,10 +2,13 @@ from enum import IntEnum
 
 from attrs import define
 
-from .misc import Object, Snowflake
+from .misc import Object
 
-
-__all__ = ("ApplicationCommand", "ApplicationCommandOption", "ApplicationCommandOptionChoice")
+__all__ = (
+    "ApplicationCommand",
+    "ApplicationCommandOption",
+    "ApplicationCommandOptionChoice",
+)
 
 
 @define(kw_only=True)
@@ -134,13 +137,13 @@ class ApplicationCommandOption:
     # channel_types: list[ChannelType] | None = field(default=None)
     # """The types of channels the option will filter to, if present."""
 
-    min_value: int = None
+    min_value: int | None = None
     """The minimum value permitted for the application command option."""
-    max_value: int = None
+    max_value: int | None = None
     """The maximum value permitted for the application command option."""
-    min_length: int = None
+    min_length: int | None = None
     """The minimum length permitted for the application command option. The minimum allowed is `0`."""
-    max_length: int = None
+    max_length: int | None = None
     """The maximum length permitted for the application command option. The maximum allowed is `1`."""
     autocomplete: bool = None
     """
@@ -168,13 +171,13 @@ class ApplicationCommand(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the application command.
     type : `ApplicationCommandType`
         The type of application command.
-    application_id : `Snowflake`
+    application_id : `int`
         The ID of the application the command is under.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild the command is under, if present.
     name : `str`
         The name of the command in-between 1-32 characters.
@@ -193,17 +196,17 @@ class ApplicationCommand(Object):
         The default permissions of the application command, if present.
     dm_permission : `bool`, optional
         Whether the application command is able to be ran in DMs or not.
-    version : `Snowflake`, optional
+    version : `int`, optional
         The internal version of application commands released. This auto-increments over time.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the application command."""
     type: ApplicationCommandType
     """The type of application command."""
-    application_id: Snowflake
+    application_id: int
     """The ID of the application the command is under."""
-    guild_id: Snowflake = None
+    guild_id: int | None = None
     """The ID of the guild the command is under, if present."""
     name: str
     """The name of the command in-between 1-32 characters."""
@@ -226,5 +229,5 @@ class ApplicationCommand(Object):
     """The default permissions of the application command, if present."""
     dm_permission: bool = None
     """Whether the application command is able to be ran in DMs or not."""
-    version: Snowflake
+    version: int
     """The internal version of application commands released. This auto-increments over time."""

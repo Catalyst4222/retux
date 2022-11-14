@@ -1,7 +1,7 @@
-from .misc import Snowflake, Timestamp
-from .guild import Member
-
 from attrs import define
+
+from .guild import Member
+from .misc import Timestamp
 
 __all__ = ("Voice", "VoiceState")
 
@@ -13,11 +13,11 @@ class VoiceState:
 
     Attributes
     ----------
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The guild ID this voice state is for.
-    channel_id : `Snowflake`, optional
+    channel_id : `int`, optional
         The channel ID this user is connected to.
-    user_id : `Snowflake`
+    user_id : `int`
         The user ID this voice state is for.
     member : `Member`, optional
         The guild member this voice state is for.
@@ -41,11 +41,11 @@ class VoiceState:
         The time at which the user requested to speak, if present.
     """
 
-    guild_id: Snowflake = None
+    guild_id: int | None = None
     """The guild ID this voice state is for."""
-    channel_id: Snowflake = None
+    channel_id: int | None = None
     """The channel ID this user is connected to."""
-    user_id: Snowflake
+    user_id: int
     """The user ID this voice state is for."""
     member: Member = None
     """The guild member this voice state is for."""

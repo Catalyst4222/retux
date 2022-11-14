@@ -1,7 +1,8 @@
 from enum import IntEnum
+
 from attrs import define
 
-from .misc import Object, Snowflake
+from .misc import Object
 from .user import User
 
 
@@ -60,9 +61,9 @@ class Sticker(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the sticker.
-    pack_id : `Snowflake`, optional
+    pack_id : `int`, optional
         The ID of the pack containing the sticker.
 
         Only standard stickers owned by Discord
@@ -89,7 +90,7 @@ class Sticker(Object):
 
         May be false if the guild that owns it
         has lost a level of boosting.
-    guild_id : `Snowflake`, optional
+    guild_id : `int`, optional
         The ID of the guild that owns the sticker.
 
         Will only be set to None if the sticker is
@@ -106,9 +107,9 @@ class Sticker(Object):
         part of a pack and owned by Discord.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the sticker."""
-    pack_id: Snowflake = None
+    pack_id: int | None = None
     """
     The ID of the pack containing the sticker.
 
@@ -141,7 +142,7 @@ class Sticker(Object):
     May be false if the guild that owns it
     has lost a level of boosting.
     """
-    guild_id: Snowflake = None
+    guild_id: int | None = None
     """
     The ID of the guild that owns the sticker.
 
@@ -155,7 +156,7 @@ class Sticker(Object):
     Will only be set to None if the sticker is
     owned by Discord.
     """
-    sort_value: int = None
+    sort_value: int | None = None
     """
     The sticker's order within its sticker pack.
 
@@ -182,7 +183,7 @@ class StickerItem(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the sticker being represented.
     name : `str`
         The name of the sticker being represented.
@@ -190,7 +191,7 @@ class StickerItem(Object):
         The type of formatting of the sticker being represented.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the sticker being represented."""
     name: str
     """The name of the sticker being represented."""
@@ -205,33 +206,33 @@ class StickerPack(Object):
 
     Attributes
     ----------
-    id : `Snowflake`
+    id : `int`
         The ID of the sticker pack.
     stickers : `list[Sticker]`
         The stickers within the sticker pack.
     name : `str
         The name of the sticker pack.
-    sku_id : `Snowflake`
+    sku_id : `int`
         The ID of the pack's SKU.
-    cover_sticker_id : `Snowflake`, optional
+    cover_sticker_id : `int`, optional
         The ID of the sticker featured as the pack's icon.
     description : `str`
         The description of the sticker pack.
-    banner_asset_id : `Snowflake`, optional
+    banner_asset_id : `int`, optional
         The ID of the sticker packs's banner image.
     """
 
-    id: Snowflake
+    id: int
     """The ID of the sticker pack."""
     stickers: list[Sticker]
     """The stickers within the sticker pack."""
     name: str
     """The name of the sticker pack."""
-    sku_id: Snowflake
+    sku_id: int
     """The ID of the pack's SKU."""
-    cover_sticker_id: Snowflake = None
+    cover_sticker_id: int | None = None
     """The ID of the sticker featured as the pack's icon."""
     description: str
     """The description of the sticker pack."""
-    banner_asset_id: Snowflake = None
+    banner_asset_id: int | None = None
     """The ID of the sticker packs's banner image."""

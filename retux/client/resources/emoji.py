@@ -1,8 +1,8 @@
 from attrs import define
 
-from .misc import Object, Snowflake
-from .user import User
+from .misc import Object
 from .role import Role
+from .user import User
 
 
 @define()
@@ -12,7 +12,7 @@ class Emoji(Object):
 
     Attributes
     ----------
-    id : `Snowflake`, optional
+    id : `int`, optional
         The ID of the Emoji.
 
         Only available on guild created emojis.
@@ -37,7 +37,7 @@ class Emoji(Object):
         the emoji lost a level of boosting.
     """
 
-    id: Snowflake = None
+    id: int | None = None
     """
     The ID of the Emoji.
 

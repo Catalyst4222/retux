@@ -8,23 +8,21 @@ from typing import Any
 
 from attrs import asdict, define, field
 from cattrs import structure
-from trio import open_nursery, sleep, Nursery
+from trio import Nursery, open_nursery, sleep
 from trio_websocket import ConnectionClosed, WebSocketConnection, open_websocket_url
 
+from ..client.flags import Intents
+from ..const import MISSING, NotNeeded, __gateway_url__
 from .error import (
-    InvalidToken,
-    RateLimited,
-    InvalidShard,
-    RequiresSharding,
-    InvalidIntents,
     DisallowedIntents,
+    InvalidIntents,
+    InvalidShard,
+    InvalidToken,
     RandomClose,
+    RateLimited,
+    RequiresSharding,
 )
 from .events.lookup import EventType
-
-from ..client.flags import Intents
-from ..client.resources.misc import Snowflake
-from ..const import MISSING, NotNeeded, __gateway_url__
 
 logger = getLogger(__name__)
 
@@ -346,7 +344,8 @@ class GatewayClient:
                 await self.reconnect()
             case 4000:
                 logger.exception(
-                    RandomClose, "Something went wrong with the Gateway. We'll reconnect."
+                    RandomClose,
+                    "Something went wrong with the Gateway. We'll reconnect.",
                 )
                 await self.reconnect()
             case 4004:
@@ -358,7 +357,8 @@ class GatewayClient:
                 # We only throw non-resumable exceptions for things that cannot resume the connection.
                 # FIXME: probably move away from exception logging and use a traceback formatter.
                 logger.exception(
-                    RateLimited, "Your bot is being Gateway rate limited. You will be reconnected."
+                    RateLimited,
+                    "Your bot is being Gateway rate limited. You will be reconnected.",
                 )
                 await self.reconnect()
             case 4010:
@@ -377,7 +377,8 @@ class GatewayClient:
                 )
             case 4999:
                 logger.exception(
-                    RandomClose, "The Gateway client declared a closure. We'll reconnect."
+                    RandomClose,
+                    "The Gateway client declared a closure. We'll reconnect.",
                 )
                 await self.reconnect()
             case _:
@@ -432,7 +433,11 @@ class GatewayClient:
                         await self._dispatch(payload.name, payload.data)
                     await self._dispatch(
                         "RAW_RECEIVE",
-                        {**payload.data, "_event_type": resource, "_event_name": payload.name},
+                        {
+                            **payload.data,
+                            "_event_type": resource,
+                            "_event_name": payload.name,
+                        },
                     )
         match payload.name:
             case "RESUMED":
@@ -555,12 +560,12 @@ class GatewayClient:
 
     async def request_guild_members(
         self,
-        guild_id: Snowflake,
+        guild_id: int,
         *,
         query: NotNeeded[str] = MISSING,
         limit: NotNeeded[int] = MISSING,
         presences: NotNeeded[bool] = MISSING,
-        user_ids: NotNeeded[Snowflake | list[Snowflake]] = MISSING,
+        user_ids: NotNeeded[int | list[int]] = MISSING,
         nonce: NotNeeded[str] = MISSING,
     ):
         """
@@ -568,7 +573,7 @@ class GatewayClient:
 
         Parameters
         ----------
-        guild_id : `Snowflake`
+        guild_id : `int`
             The ID of the guild to request from.
         query : `str`, optional
             The name of the guild member(s). If you're looking to
@@ -582,7 +587,7 @@ class GatewayClient:
             Whether you only want to receive guild members with
             a presence. The `GUILD_PRESENCES` intent must be
             enabled in order to use.
-        user_ids : `Snowflake`, `list[Snowflake]`, optional
+        user_ids : `int`, `list[int]`, optional
             The IDs of members in the guild to return. This
             may be used in conjunction to `query`, and poses the
             same maximum as `limit` regardless of declaration.
@@ -611,8 +616,8 @@ class GatewayClient:
 
     async def update_voice_state(
         self,
-        guild_id: Snowflake,
-        channel_id: NotNeeded[Snowflake] = MISSING,
+        guild_id: int,
+        channel_id: NotNeeded[int] = MISSING,
         self_mute: NotNeeded[bool] = MISSING,
         self_deaf: NotNeeded[bool] = MISSING,
     ):
@@ -621,9 +626,9 @@ class GatewayClient:
 
         Parameters
         ----------
-        guild_id : `Snowflake`
+        guild_id : `int`
             The ID of the guild to request from.
-        channel_id : `Snowflake`, optional
+        channel_id : `int`, optional
             The channel ID of the guild to update in.
             If the bot is trying to disconnect, this should
             be left untouched.

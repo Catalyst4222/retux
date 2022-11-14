@@ -1,38 +1,39 @@
+from enum import Enum
+
 from .channel import (
     ChannelCreate,
-    ChannelUpdate,
     ChannelDelete,
     ChannelPinsUpdate,
-    ThreadListSync,
-    ThreadDelete,
-    ThreadUpdate,
+    ChannelUpdate,
     ThreadCreate,
+    ThreadDelete,
+    ThreadListSync,
+    ThreadUpdate,
 )
-from .connection import HeartbeatAck, Ready, InvalidSession, Reconnect, Resumed
-from .misc import TypingStart
+from .connection import HeartbeatAck, InvalidSession, Ready, Reconnect, Resumed
 from .guild import (
+    GuildBanAdd,
+    GuildBanRemove,
     GuildCreate,
     GuildDelete,
-    GuildUpdate,
-    GuildStickersUpdate,
     GuildEmojisUpdate,
-    GuildBanRemove,
-    GuildBanAdd,
+    GuildIntegrationsUpdate,
+    GuildMemberAdd,
+    GuildMemberRemove,
     GuildMembersChunk,
     GuildMemberUpdate,
-    GuildMemberRemove,
-    GuildMemberAdd,
-    GuildIntegrationsUpdate,
     GuildRoleCreate,
     GuildRoleDelete,
     GuildRoleUpdate,
     GuildScheduledEventCreate,
-    GuildScheduledEventUpdate,
     GuildScheduledEventDelete,
+    GuildScheduledEventUpdate,
     GuildScheduledEventUserAdd,
     GuildScheduledEventUserRemove,
+    GuildStickersUpdate,
+    GuildUpdate,
 )
-from enum import Enum
+from .misc import TypingStart
 
 
 class EventType(Enum):

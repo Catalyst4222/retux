@@ -1,14 +1,14 @@
 from attrs import define
 
-from ...client.resources.role import Role
+from ...client.resources.channel import Channel, ThreadChannel
 from ...client.resources.emoji import Emoji
+from ...client.resources.guild import Guild, Member, UnavailableGuild
+from ...client.resources.guild_scheduled_event import GuildScheduledEvent
+from ...client.resources.misc import CDNEndpoint, Image, Timestamp
+from ...client.resources.role import Role
+from ...client.resources.stage_instance import StageInstance
 from ...client.resources.sticker import Sticker
 from ...client.resources.user import User
-from ...client.resources.guild_scheduled_event import GuildScheduledEvent
-from ...client.resources.misc import Timestamp, Snowflake, Image, CDNEndpoint
-from ...client.resources.channel import Channel, ThreadChannel
-from ...client.resources.guild import Guild, Member, UnavailableGuild
-from ...client.resources.stage_instance import StageInstance
 
 
 @define(kw_only=True)
@@ -87,13 +87,13 @@ class GuildBanAdd:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where the ban occurred.
     user : `User`
         The user who was banned from the guild.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where the ban occurred."""
     user: User
     """The user who was banned from the guild."""
@@ -106,13 +106,13 @@ class GuildBanRemove:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where the unban occurred.
     user : `User`
         The user who was unbanned from the guild.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where the unban occurred."""
     user: User
     """The user who was unbanned from the guild."""
@@ -125,13 +125,13 @@ class GuildEmojisUpdate:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where emojis were updated.
     emojis : `list[Emoji]`
         The emojis updated in the guild.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where emojis were updated."""
     emojis: list[Emoji]
     """The emojis updated in the guild."""
@@ -144,13 +144,13 @@ class GuildStickersUpdate:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where stickers were updated.
     stickers : `list[Sticker]`
         The stickers updated in the guild.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where emojis were updated."""
     stickers: list[Sticker]
     """The stickers updated in the guild."""
@@ -163,11 +163,11 @@ class GuildIntegrationsUpdate:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where integrations were updated.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where integrations were updated."""
 
 
@@ -178,11 +178,11 @@ class GuildMemberAdd(Member):
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where a user was added.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where a user was added."""
 
 
@@ -193,13 +193,13 @@ class GuildMemberRemove:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where the user was removed.
     user : `User`
         The user who was removed from the guild.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where the user was removed."""
     user: User
     """The user who was removed from the guild."""
@@ -212,9 +212,9 @@ class GuildMemberUpdate:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where the user was removed.
-    roles : `list[Snowflake]`
+    roles : `list[int]`
         The roles belonging to the guild member.
     user : `User`
         The user who was removed from the guild.
@@ -241,9 +241,9 @@ class GuildMemberUpdate:
         timed out, if present.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where the user was removed."""
-    roles: list[Snowflake]
+    roles: list[int]
     """The roles belonging to the guild member."""
     user: User
     """The user who was removed from the guild."""
@@ -302,7 +302,7 @@ class GuildMembersChunk:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where the request was performed.
     members : `list[Member]`
         The returned members of the guild.
@@ -316,7 +316,7 @@ class GuildMembersChunk:
         The nonce of the requested guild.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where the request was performed."""
     members: list[Member]
     """The returned members of the guild."""
@@ -339,13 +339,13 @@ class GuildRoleCreate:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where the role was created.
     role : `Role`
         The role that was added to the guild.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where the role was added."""
     role: Role
     """The role that was added to the guild."""
@@ -358,13 +358,13 @@ class GuildRoleUpdate:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where the role was updated.
     role : `Role`
         The role that was updated in the guild.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where the role was added."""
     role: Role
     """The role that was added to the guild."""
@@ -377,15 +377,15 @@ class GuildRoleDelete:
 
     Attributes
     ----------
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild where the role was deleted.
-    role_id : `Snowflake`
+    role_id : `int`
         The ID of the role that was deleted from the guild.
     """
 
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild where the role was deleted."""
-    role_id: Snowflake
+    role_id: int
     """The ID of the role that was deleted from the guild."""
 
 
@@ -408,19 +408,19 @@ class GuildScheduledEventUserAdd:
 
     Attributes
     ----------
-    guild_scheduled_event_id : `Snowflake`
+    guild_scheduled_event_id : `int`
         The ID of the guild's scheduled event.
-    user_id : `Snowflake`
+    user_id : `int`
         The ID of the user in the guild scheduled event.
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild associated to the scheduled event.
     """
 
-    guild_scheduled_event_id: Snowflake
+    guild_scheduled_event_id: int
     """The ID of the guild's scheduled event."""
-    user_id: Snowflake
+    user_id: int
     """The ID of the user in the guild scheduled event."""
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild associated to the scheduled event."""
 
 
@@ -431,17 +431,17 @@ class GuildScheduledEventUserRemove:
 
     Attributes
     ----------
-    guild_scheduled_event_id : `Snowflake`
+    guild_scheduled_event_id : `int`
         The ID of the guild's scheduled event.
-    user_id : `Snowflake`
+    user_id : `int`
         The ID of the user in the guild scheduled event.
-    guild_id : `Snowflake`
+    guild_id : `int`
         The ID of the guild associated to the scheduled event.
     """
 
-    guild_scheduled_event_id: Snowflake
+    guild_scheduled_event_id: int
     """The ID of the guild's scheduled event."""
-    user_id: Snowflake
+    user_id: int
     """The ID of the user in the guild scheduled event."""
-    guild_id: Snowflake
+    guild_id: int
     """The ID of the guild associated to the scheduled event."""

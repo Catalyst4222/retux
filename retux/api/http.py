@@ -4,12 +4,12 @@ from logging import INFO, getLogger
 from sys import version_info
 
 from attrs import define, field
-from httpx import AsyncClient, QueryParams, Response, __version__ as __http_version__
+from httpx import AsyncClient, QueryParams, Response
+from httpx import __version__ as __http_version__
 from trio import Event, sleep
 
-from .error import HTTPException
-
 from ..const import MISSING, NotNeeded, __api_url__, __repo_url__, __version__
+from .error import HTTPException
 
 logger = getLogger(__name__)
 
@@ -148,7 +148,10 @@ class HTTPClient:
         }
 
     async def request(
-        self, route: _Route, payload: dict | None = None, retries: NotNeeded[int] = MISSING
+        self,
+        route: _Route,
+        payload: dict | None = None,
+        retries: NotNeeded[int] = MISSING,
     ):
         """
         Makes a request to Discord's REST API.
