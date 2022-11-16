@@ -2,6 +2,7 @@ from base64 import b64encode
 from datetime import datetime
 from enum import Enum
 from io import IOBase
+from typing import Any
 
 from attr import field
 from attrs import define
@@ -531,6 +532,14 @@ class Object:
     """The ID associated to the object."""
     _bot_inst: NotNeeded["Bot"] = MISSING  # noqa F821
     """An instance of `Bot` used for helper methods."""
+    _extras: dict[str, Any] = field(init=False, factory=dict)
+    """A dictionary of extra data sent from discord"""
+
+    def __getattr__(self, item):
+        try:
+            return self._extras[item]
+        except KeyError:
+            raise AttributeError(f"'{self.__class__.__name__}' has no attribute '{item}'") from None
 
 
 @define()
