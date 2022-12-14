@@ -198,7 +198,7 @@ class GatewayClient:
         *,
         version: int = 10,
         encoding: str = "json",
-        compress: str = None,
+        compress: NotNeeded[str] = MISSING,
     ):
         """
         Creates a new connection to the Gateway.
@@ -218,7 +218,9 @@ class GatewayClient:
         """
         self.token = token
         self.intents = intents
-        self._meta = _GatewayMeta(version=version, encoding=encoding, compress=compress)
+        self._meta = _GatewayMeta(
+            version=version, encoding=encoding, compress=None if compress is MISSING else compress
+        )
 
         self._conn = None
         self._tasks = None
@@ -397,6 +399,7 @@ class GatewayClient:
         # Discord recommends to always use the last given sequence for reconnects.
         # This helps with resending payloads that were lost on a disconnect.
         self._meta.seq = payload.sequence
+        self._last_ack[1] = perf_counter()
 
         match _GatewayOpCode(payload.opcode):
             case _GatewayOpCode.HELLO:
@@ -408,9 +411,7 @@ class GatewayClient:
                     logger.debug(f"❤ -> {self._meta.heartbeat_interval}ms.")
                     self._heartbeat_ack = True
             case _GatewayOpCode.HEARTBEAT_ACK:
-                self._last_ack[1] = perf_counter()
                 logger.debug(f"❤️ ({self.latency}ms.)")
-                self._last_ack[0] = perf_counter()
             case _GatewayOpCode.INVALID_SESSION:
                 logger.info("Our Gateway connection has suddenly invalidated.")
 
@@ -452,6 +453,7 @@ class GatewayClient:
                 logger.info(
                     f"Connection is now ready. (session: {self._meta.session_id}, sequence: {self._meta.seq})"
                 )
+        self._last_ack[0] = perf_counter()
 
     async def _hook(self, bot: "Bot") -> object:  # noqa
         """
@@ -537,7 +539,7 @@ class GatewayClient:
     async def _resume(self):
         """Sends a resuming payload to the Gateway."""
         payload = _GatewayPayload(
-            op=_GatewayOpCode.RESUME.value,
+            op=_GatewayOpCode.RESUME,
             d={
                 "token": self.token,
                 "session_id": self._meta.session_id,
@@ -549,7 +551,7 @@ class GatewayClient:
 
     async def _heartbeat(self):
         """Sends a heartbeat payload to the Gateway."""
-        payload = _GatewayPayload(op=_GatewayOpCode.HEARTBEAT.value, d=self._meta.seq)
+        payload = _GatewayPayload(op=_GatewayOpCode.HEARTBEAT, d=self._meta.seq)
 
         await sleep(random())
 
