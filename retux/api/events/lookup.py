@@ -1,5 +1,3 @@
-from enum import Enum
-
 from .channel import (
     ChannelCreate,
     ChannelDelete,
@@ -36,7 +34,7 @@ from .guild import (
 from .misc import TypingStart
 
 
-class EventType(Enum):
+class EventType:
     """
     Represents the type of Gateway events from Discord.
 

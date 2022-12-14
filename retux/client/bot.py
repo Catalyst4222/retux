@@ -104,7 +104,7 @@ class Bot:
 
         self._calls[_name] = call
 
-    async def _trigger(self, name: str, *args):
+    async def _trigger(self, name: str, /, *args, **kwargs):
         """
         Triggers a name registered for callbacks.
 
@@ -114,7 +114,7 @@ class Bot:
             The name associated with the callbacks.
         """
         for event in self._calls.get(name, []):
-            await event(*args)
+            await event(*args, **kwargs)
 
     def on(
         self, coro: NotNeeded[Coroutine] = MISSING, *, name: NotNeeded[str] = MISSING

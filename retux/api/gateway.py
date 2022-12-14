@@ -6,9 +6,11 @@ from sys import platform
 from time import perf_counter
 from typing import Any
 
+import cattrs
 from attrs import asdict, define, field
 from cattrs import structure
-from trio import Nursery, open_nursery, sleep
+from trio import open_nursery, sleep
+from trio._core._run import NurseryManager
 from trio_websocket import ConnectionClosed, WebSocketConnection, open_websocket_url
 
 from ..client.flags import Intents
@@ -178,7 +180,7 @@ class GatewayClient:
     """Metadata representing connection parameters for the Gateway."""
     _conn: WebSocketConnection | None
     """An instance of a connection to the Gateway."""
-    _tasks: Nursery | None
+    _tasks: NurseryManager | None
     """The tasks associated with the Gateway, for reconnection and heart-beating."""
     _closed: bool
     """Whether the Gateway connection is closed or not."""
@@ -239,6 +241,12 @@ class GatewayClient:
 
     async def __aexit__(self, *exc):
         return await self._tasks.__aexit__(*exc)  # noqa
+
+    def create_task(self, async_fn, *args, **kwargs):
+        async def wrapper():
+            return await async_fn(*args, **kwargs)
+
+        self._tasks._nursery.start_soon(wrapper)
 
     async def _receive(self) -> _GatewayPayload:
         """
@@ -429,7 +437,11 @@ class GatewayClient:
                 if payload.name not in ["RESUMED", "READY"]:
                     resource = EventType.__dict__.get(payload.name, MISSING)
                     if resource is not MISSING:
-                        await self._dispatch(payload.name, resource.value, **payload.data)
+                        await self._dispatch(
+                            payload.name,
+                            cattrs.structure(payload.data, resource),
+                            # **payload.data
+                        )
                     else:
                         await self._dispatch(payload.name, payload.data)
                     await self._dispatch(
@@ -453,6 +465,7 @@ class GatewayClient:
                 logger.info(
                     f"Connection is now ready. (session: {self._meta.session_id}, sequence: {self._meta.seq})"
                 )
+                await self._dispatch("ready")
         self._last_ack[0] = perf_counter()
 
     async def _hook(self, bot: "Bot") -> object:  # noqa
@@ -477,9 +490,7 @@ class GatewayClient:
         """
         self._bots.append(bot)
 
-    async def _dispatch(
-        self, _name: str, data: list[dict] | dict | type | MISSING, *args, **kwargs
-    ):
+    async def _dispatch(self, _name: str, *args, **kwargs):
         """
         Dispatches an event from the Gateway.
 
@@ -503,7 +514,7 @@ class GatewayClient:
         data : `dict`, `Serializable`, `MISSING`
             The supplied payload data from the event.
         """
-        logger.debug(f"{_name}: {data if isinstance(data, dict) else kwargs}")
+        logger.debug(f"{_name}: {args} {kwargs}")
 
         # TODO: move the underlying dispatch logic to the ._track() method.
         # We probably don't need to segregate the callback designator flow here,
@@ -511,17 +522,7 @@ class GatewayClient:
         # event table lookup call, to avoid O(n) + 1 time complexity.
 
         for bot in self._bots:
-            if isinstance(data, (dict, MISSING)):
-                await bot._trigger(_name.lower(), data)
-            elif data is None:
-                await bot._trigger(_name.lower(), kwargs)
-            else:
-                if kwargs.get("id"):
-                    kwargs["bot_inst"] = bot.__class__
-                await bot._trigger(
-                    _name.lower(),
-                    structure(kwargs, data),
-                )
+            self.create_task(bot._trigger, _name.lower(), *args, **kwargs)
 
     async def _identify(self):
         """Sends an identification payload to the Gateway."""
