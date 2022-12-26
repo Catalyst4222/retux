@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Callable, Coroutine, Optional
+from typing import Any, Callable, Coroutine, Optional, overload
 
 from trio import run
 
@@ -116,8 +116,16 @@ class Bot:
         for event in self._calls.get(name, []):
             await event(*args, **kwargs)
 
+    @overload  # No parenthesis
+    def on(self, coro: Coroutine) -> Coroutine:
+        ...
+
+    @overload
+    def on(self, name: NotNeeded[str] = MISSING) -> Callable[[Coroutine], Coroutine]:
+        ...
+
     def on(
-        self, coro: NotNeeded[Coroutine] = MISSING, *, name: NotNeeded[str] = MISSING
+        self, coro: NotNeeded[Coroutine | str] = MISSING, *, name: NotNeeded[str] = MISSING
     ) -> Callable[..., Any]:
         """
         Listens to events given from the Gateway.
