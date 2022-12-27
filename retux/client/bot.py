@@ -3,6 +3,8 @@ from typing import Any, Callable, Coroutine, Optional, overload
 
 from trio import run
 
+from .models.event import Event
+from .models.listener import Listener
 from ..api import GatewayClient
 from ..api.http import HTTPClient
 from ..const import MISSING, NotNeeded
@@ -81,7 +83,9 @@ class Bot:
         async with GatewayClient(token, self.intents) as self._gateway:
             await self._gateway._hook(self)
 
-    def _register(self, coro: Coroutine, name: Optional[str] = None, event: Optional[bool] = True):
+    def _register(
+        self, coro: Coroutine, name: Optional[str] = None, event: Optional[bool] = True
+    ) -> Listener:
         """
         Registers a coroutine to be used as a callback.
 
@@ -96,13 +100,17 @@ class Bot:
             Whether the coroutine is a Gateway event or not.
             Defaults to `True`.
         """
-        _name = (name if event else name) if name else coro.__name__
+        _name = name or coro.__name__
+
+        listener = Listener(callback=coro, name=_name)
 
         logger.debug(f"Registering {_name}.")
         call = self._calls.get(_name, [])
         call.append(coro)
 
         self._calls[_name] = call
+
+        return listener
 
     async def _trigger(self, name: str, /, *args, **kwargs):
         """
@@ -114,14 +122,15 @@ class Bot:
             The name associated with the callbacks.
         """
         for event in self._calls.get(name, []):
+
             await event(*args, **kwargs)
 
     @overload  # No parenthesis
-    def on(self, coro: Coroutine) -> Coroutine:
+    def on(self, coro: Coroutine) -> Listener:
         ...
 
     @overload
-    def on(self, name: NotNeeded[str] = MISSING) -> Callable[[Coroutine], Coroutine]:
+    def on(self, name: NotNeeded[str] = MISSING) -> Callable[[Coroutine], Listener]:
         ...
 
     def on(
@@ -213,10 +222,16 @@ class Bot:
             The coroutine associated with the event, with
             a callable pattern as to `coro`.
         """
+        if isinstance(coro, Event):
+            return coro._register_events(self)
 
-        def decor(coro: Coroutine):
-            self._register(coro, name=name if name is not MISSING else coro.__name__)
-            return coro
+        def decor(coro: Coroutine) -> Listener:
+            if isinstance(coro, Event):
+                coro.event_type = name
+                return coro._register_events(self)
+            return self._register(
+                coro, name=name.lower() if name is not MISSING else coro.__name__.lower()
+            )
 
         if isinstance(coro, str):
             name = coro

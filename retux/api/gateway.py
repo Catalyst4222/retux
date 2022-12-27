@@ -490,7 +490,12 @@ class GatewayClient:
         """
         self._bots.append(bot)
 
-    async def _dispatch(self, _name: str, *args, **kwargs):
+    async def _dispatch(
+        self,
+        _name: str,
+        data=MISSING,
+        # *args, **kwargs
+    ):
         """
         Dispatches an event from the Gateway.
 
@@ -514,7 +519,7 @@ class GatewayClient:
         data : `dict`, `Serializable`, `MISSING`
             The supplied payload data from the event.
         """
-        logger.debug(f"{_name}: {args} {kwargs}")
+        logger.debug(f"{_name}: {data}")
 
         # TODO: move the underlying dispatch logic to the ._track() method.
         # We probably don't need to segregate the callback designator flow here,
@@ -522,7 +527,10 @@ class GatewayClient:
         # event table lookup call, to avoid O(n) + 1 time complexity.
 
         for bot in self._bots:
-            self.create_task(bot._trigger, _name.lower(), *args, **kwargs)
+            if data is not MISSING:
+                self.create_task(bot._trigger, _name.lower(), data)
+            else:
+                self.create_task(bot._trigger, _name.lower())
 
     async def _identify(self):
         """Sends an identification payload to the Gateway."""
