@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Callable, Coroutine, Optional, overload
+from typing import Any, Callable, Coroutine, Optional, overload, TypeVar
 
 from trio import run
 
@@ -13,6 +13,9 @@ from .flags import Intents
 
 logger = getLogger(__name__)
 logger.warning("retux is in alpha. If you come across a bug, please file a GitHub Issue.")
+
+_T = TypeVar("_T")
+EventSubclass = TypeVar("EventSubclass", bound=Event)
 
 
 class Bot:
@@ -133,9 +136,15 @@ class Bot:
     def on(self, name: NotNeeded[str] = MISSING) -> Callable[[Coroutine], Listener]:
         ...
 
-    def on(
-        self, coro: NotNeeded[Coroutine | str] = MISSING, *, name: NotNeeded[str] = MISSING
-    ) -> Callable[..., Any]:
+    @overload
+    def on(self, event: EventSubclass[_T]) -> EventSubclass[_T]:
+        ...
+
+    @overload
+    def on(self) -> Callable[[EventSubclass[_T]], EventSubclass[_T]]:
+        ...
+
+    def on(self, coro=MISSING, *, name: NotNeeded[str] = MISSING) -> Callable[..., Any]:
         """
         Listens to events given from the Gateway.
 
@@ -223,11 +232,14 @@ class Bot:
             a callable pattern as to `coro`.
         """
         if isinstance(coro, Event):
+            if name is not MISSING:
+                coro.event_type = name
             return coro._register_events(self)
 
         def decor(coro: Coroutine) -> Listener:
             if isinstance(coro, Event):
-                coro.event_type = name
+                if name is not MISSING:
+                    coro.event_type = name
                 return coro._register_events(self)
             return self._register(
                 coro, name=name.lower() if name is not MISSING else coro.__name__.lower()

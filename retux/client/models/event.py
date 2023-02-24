@@ -14,9 +14,6 @@ class EventMeta(type):
 
 
 class Event(metaclass=EventMeta):
-    def __init__(self):
-        ...
-
     @classmethod
     def _register_events(cls, bot):
         self = cls()
@@ -32,4 +29,4 @@ class Event(metaclass=EventMeta):
                 print(func)
                 bot._register(coro=func, name=name)
 
-        return self
+        return cls
