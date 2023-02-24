@@ -1,5 +1,8 @@
 import inspect
-from typing import Callable
+from typing import Callable, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..bot import Bot
 
 
 class EventMeta(type):
@@ -15,10 +18,10 @@ class EventMeta(type):
 
 class Event(metaclass=EventMeta):
     @classmethod
-    def _register_events(cls, bot):
+    def _register_events(cls, bot: "Bot"):
+        """Registers listeners from the event"""
         self = cls()
         event_types = ("create", "add", "update", "delete", "remove", "remove_all", "delete_bulk")
-        print(self.event_type)
 
         for _, func in inspect.getmembers(self, predicate=inspect.ismethod):
             func: Callable
@@ -26,7 +29,15 @@ class Event(metaclass=EventMeta):
             if func.__name__ in event_types:
                 # override the name
                 name = f"{self.event_type}_{func.__name__}"
-                print(func)
                 bot._register(coro=func, name=name)
 
         return cls
+
+    @classmethod
+    def _remove_events(cls, bot: "Bot"):
+        """Removes all listeners made from this event"""
+        for listeners in bot._calls.values():
+            for listener in listeners.copy():
+                if owner := getattr(listener.callback, "__self__", None):
+                    if isinstance(owner, cls):
+                        listeners.remove(listener)
