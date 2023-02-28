@@ -1,13 +1,14 @@
-from typing import TypeVar, Union
+from typing import TypeVar, Union, Awaitable, Callable
 
 __all__ = (
     "__version__",
     "__api_version__",
     "__api_url__",
-    "MISSING",
-    "NotNeeded",
     "__gateway_url__",
     "__repo_url__",
+    "MISSING",
+    "NotNeeded",
+    "Coro",
 )
 
 
@@ -33,4 +34,10 @@ NotNeeded = Union[_T, MISSING]
 A type variable to work alongside `MISSING`. This should only
 be used to help further indicate an optional argument where it
 already points to said type.
+"""
+
+Coro = Callable[..., Awaitable[_T]]
+"""
+A type variable to replace long typehint definitions.
+`Coroutine` is not what people usually call coroutines, it's what's returned by calling an `async def` function
 """

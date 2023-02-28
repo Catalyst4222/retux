@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Callable, Coroutine, Optional, overload, TypeVar
+from typing import Any, Callable, Optional, overload, TypeVar
 
 from trio import run
 
@@ -7,7 +7,7 @@ from .models.event import Event
 from .models.listener import Listener
 from ..api import GatewayClient
 from ..api.http import HTTPClient
-from ..const import MISSING, NotNeeded
+from ..const import MISSING, NotNeeded, Coro
 from ..utils.hooks import cattrs_structure_hooks
 from .flags import Intents
 
@@ -30,7 +30,7 @@ class Bot:
         The bot's gateway connection.
     http : `HTTPClient`
         The bot's HTTP connection.
-    _calls : `dict[str, list[typing.Coroutine]]`
+    _calls : `dict[str, list[Coro]]`
         A set of callbacks registered by their name to their function.
         These are used to help dispatch Gateway events.
     """
@@ -41,7 +41,7 @@ class Bot:
     """The bot's gateway connection."""
     http: HTTPClient
     """The bot's HTTP connection."""
-    _calls: dict[str, list[Coroutine]] = {}
+    _calls: dict[str, list[Listener]] = {}
     """
     A set of callbacks registered by their name to their function.
     These are used to help dispatch Gateway events.
@@ -87,14 +87,14 @@ class Bot:
             await self._gateway._hook(self)
 
     def _register(
-        self, coro: Coroutine, name: Optional[str] = None, event: Optional[bool] = True
+        self, coro: Coro, name: Optional[str] = None, event: Optional[bool] = True
     ) -> Listener:
         """
         Registers a coroutine to be used as a callback.
 
         Parameters
         ----------
-        coro : `typing.Coroutine`
+        coro : `Coro`
             The coroutine associated with the event.
         name : `str`, optional
             The name associated with the event. Defaults to
@@ -109,7 +109,7 @@ class Bot:
 
         logger.debug(f"Registering {_name}.")
         call = self._calls.get(_name, [])
-        call.append(coro)
+        call.append(listener)
 
         self._calls[_name] = call
 
@@ -129,11 +129,11 @@ class Bot:
             await event(*args, **kwargs)
 
     @overload  # No parenthesis
-    def on(self, coro: Coroutine) -> Listener:
+    def on(self, coro: Coro) -> Listener:
         ...
 
     @overload
-    def on(self, name: NotNeeded[str] = MISSING) -> Callable[[Coroutine], Listener]:
+    def on(self, name: NotNeeded[str] = MISSING) -> Callable[[Coro], Listener]:
         ...
 
     @overload
@@ -216,7 +216,7 @@ class Bot:
 
         Parameters
         ----------
-        coro : `typing.Coroutine`, optional
+        coro : `Coro`, optional
             The coroutine to associate with the event. This is
             to be placed as a decorator on top of an asynchronous
             function.
@@ -236,7 +236,7 @@ class Bot:
                 coro.event_type = name
             return coro._register_events(self)
 
-        def decor(coro: Coroutine) -> Listener:
+        def decor(coro: Coro) -> Listener:
             if isinstance(coro, Event):
                 if name is not MISSING:
                     coro.event_type = name
